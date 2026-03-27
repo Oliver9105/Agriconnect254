@@ -135,24 +135,34 @@ const BATCHES: Batch[] = [
   }
 ];
 
-const VisualGauge = ({ value, max, label, icon: Icon, colorClass }: { value: number, max: number, label: string, icon: any, colorClass: string }) => {
+type GaugeColor = 'cyan' | 'blue' | 'emerald' | 'amber';
+
+const GAUGE_COLOR_MAP: Record<GaugeColor, { text: string; bg: string; bgMuted: string }> = {
+  cyan:    { text: 'text-cyan-400',    bg: 'bg-cyan-400',    bgMuted: 'bg-cyan-400/10' },
+  blue:    { text: 'text-blue-400',    bg: 'bg-blue-400',    bgMuted: 'bg-blue-400/10' },
+  emerald: { text: 'text-emerald-500', bg: 'bg-emerald-500', bgMuted: 'bg-emerald-500/10' },
+  amber:   { text: 'text-amber-400',   bg: 'bg-amber-400',   bgMuted: 'bg-amber-400/10' },
+};
+
+const VisualGauge = ({ value, max, label, icon: Icon, color }: { value: number, max: number, label: string, icon: any, color: GaugeColor }) => {
   const percentage = (value / max) * 100;
+  const c = GAUGE_COLOR_MAP[color] ?? GAUGE_COLOR_MAP.cyan;
   return (
     <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-4 shadow-neumorphic-inset-sm group hover:bg-slate-900/60 transition-all">
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
-          <div className={cn("p-1.5 rounded-lg bg-slate-950 shadow-tactile border border-white/5", colorClass.replace('text-', 'bg-').replace('400', '400/10').replace('500', '500/10'))}>
-            <Icon className={cn("w-3.5 h-3.5", colorClass)} />
+          <div className={cn('p-1.5 rounded-lg bg-slate-950 shadow-tactile border border-white/5', c.bgMuted)}>
+            <Icon className={cn('w-3.5 h-3.5', c.text)} />
           </div>
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</span>
         </div>
-        <span className={cn("text-xs font-mono font-bold", colorClass)}>{value}{label === 'Temp' ? '°C' : '%'}</span>
+        <span className={cn('text-xs font-mono font-bold', c.text)}>{value}{label === 'Temp' ? '°C' : '%'}</span>
       </div>
       <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden shadow-neumorphic-inset-sm p-0.5">
-        <motion.div 
+        <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
-          className={cn("h-full rounded-full shadow-glow-emerald", colorClass.replace('text-', 'bg-'))}
+          className={cn('h-full rounded-full shadow-glow-emerald', c.bg)}
         />
       </div>
     </div>
@@ -248,11 +258,11 @@ export const SupplyChain = () => {
       className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30"
     >
       {/* Sticky Glass Header */}
-      <div className="sticky top-0 z-[100] bg-slate-950/40 backdrop-blur-2xl border-b border-white/5 px-6 lg:px-12 py-8">
+      <div className="sticky top-0 z-[100] bg-slate-950/40 backdrop-blur-2xl border-b border-white/5 px-4 sm:px-6 lg:px-12 py-4 sm:py-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-8">
             <div>
-              <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tighter mb-2 drop-shadow-2xl">Logistics Hub</h2>
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter mb-2 drop-shadow-2xl">Logistics Hub</h2>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full shadow-glow-emerald">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -318,7 +328,7 @@ export const SupplyChain = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Left Column: Map & Active Batch Detail */}
           <div className="lg:col-span-8 space-y-12">
@@ -332,8 +342,8 @@ export const SupplyChain = () => {
               animate="animate"
               className="grid grid-cols-1 md:grid-cols-3 gap-8"
             >
-              <VisualGauge value={parseFloat(selectedBatch.temp)} max={40} label="Temp" icon={Thermometer} colorClass="text-cyan-400" />
-              <VisualGauge value={parseFloat(selectedBatch.humidity)} max={100} label="Humidity" icon={Droplets} colorClass="text-blue-400" />
+              <VisualGauge value={parseFloat(selectedBatch.temp)} max={40} label="Temp" icon={Thermometer} color="cyan" />
+              <VisualGauge value={parseFloat(selectedBatch.humidity)} max={100} label="Humidity" icon={Droplets} color="blue" />
               <motion.div 
                 variants={fadeInUp}
                 className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-8 shadow-neumorphic-inset-sm flex flex-col justify-between group hover:bg-slate-900/60 transition-all"
