@@ -52,8 +52,10 @@ export default function App() {
       case 'settings': return <Settings />;
       default: return (
         <div className="space-y-12 min-w-0">
-          <GrowthMomentum />
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
+          <div className="w-full min-w-0">
+            <GrowthMomentum />
+          </div>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-12 min-w-0">
             <div className="xl:col-span-2 min-w-0">
               <NeuralAgri batchId="K-TEA-01" />
             </div>
