@@ -91,7 +91,7 @@ export const NeuralAgri = ({ batchId }: { batchId: string }) => {
         </div>
       </div>
 
-      <div className="h-48 w-full mb-10 bg-slate-950/30 rounded-[2.5rem] p-6 border border-white/5 shadow-neumorphic-inset-sm">
+      <div className="h-48 w-full mb-10 bg-slate-950/30 rounded-[2.5rem] border border-white/5 shadow-neumorphic-inset-sm">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={prediction?.graphData || Array.from({length: 12}, (_, i) => ({day: i, momentum: 30 + Math.random() * 30}))}>
             <defs>
