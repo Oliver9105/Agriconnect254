@@ -10,9 +10,12 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('system');
+  const [theme, setTheme] = useState<Theme>(() => {
+    return (localStorage.getItem('agri_theme') as Theme) || 'dark';
+  });
 
   useEffect(() => {
+    localStorage.setItem('agri_theme', theme);
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
 
