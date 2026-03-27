@@ -92,17 +92,17 @@ export const WeatherForecast = () => {
   }
 
   return (
-    <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-10 h-full shadow-neumorphic overflow-hidden relative hover:border-emerald-500/30 transition-all duration-700 group">
+    <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-5 sm:p-10 h-full shadow-neumorphic overflow-hidden relative hover:border-emerald-500/30 transition-all duration-700 group">
       <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full -mr-32 -mt-32 group-hover:bg-emerald-500/10 transition-all duration-1000" />
       
-      <div className="flex items-center justify-between mb-10 relative z-10">
-        <div className="flex items-center gap-6">
-          <div className="p-4 bg-slate-950 rounded-2xl shadow-tactile group-hover:shadow-glow-emerald transition-all duration-700 border border-white/5">
-            <Calendar className="w-6 h-6 text-emerald-500" />
+      <div className="flex items-center justify-between mb-6 relative z-10">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-slate-950 rounded-2xl shadow-tactile group-hover:shadow-glow-emerald transition-all duration-700 border border-white/5">
+            <Calendar className="w-5 h-5 text-emerald-500" />
           </div>
           <div>
-            <h3 className="text-xl font-black text-white tracking-tighter leading-none">Kericho Forecast</h3>
-            <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em] mt-2 opacity-80">Next 7 Days • Highlands Region</p>
+            <h3 className="text-base font-black text-white tracking-tighter leading-none">Kericho Forecast</h3>
+            <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.2em] mt-1 opacity-80">Next 7 Days • Highlands</p>
           </div>
         </div>
       </div>
@@ -114,29 +114,19 @@ export const WeatherForecast = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="group/item flex items-center justify-between p-5 bg-slate-950/30 border border-white/5 rounded-[2rem] hover:bg-slate-950/50 hover:border-emerald-500/20 transition-all cursor-default shadow-neumorphic-inset-sm"
+            className="group/item flex items-center justify-between p-3 sm:p-5 bg-slate-950/30 border border-white/5 rounded-2xl hover:bg-slate-950/50 hover:border-emerald-500/20 transition-all cursor-default shadow-neumorphic-inset-sm"
           >
-            <div className="flex items-center gap-6 min-w-[120px]">
-              <span className="text-[11px] font-black text-slate-600 w-12 tracking-[0.2em] group-hover/item:text-slate-400 transition-colors">{i === 0 ? 'TOD' : getDayName(day.date).toUpperCase()}</span>
-              <div className="group-hover/item:scale-125 transition-transform duration-700">
-                {getWeatherIcon(day.weatherCode)}
-              </div>
+            <div className="flex items-center gap-3 w-16">
+              <span className="text-[10px] font-black text-slate-600 tracking-[0.1em] group-hover/item:text-slate-400 transition-colors">{i === 0 ? 'TOD' : getDayName(day.date).toUpperCase()}</span>
             </div>
+            <div className="flex-none">{getWeatherIcon(day.weatherCode)}</div>
 
-            <div className="flex items-center gap-10">
-              <div className="flex items-center gap-4 min-w-[100px]">
-                <span className="text-lg font-black text-white tracking-tighter">{day.maxTemp}°</span>
-                <span className="text-xs font-black text-slate-700 tracking-tighter">{day.minTemp}°</span>
-              </div>
-
-              <div className="flex items-center gap-3 min-w-[70px]">
-                <CloudRain className="w-4 h-4 text-blue-500/30 group-hover/item:text-blue-500 transition-colors" />
-                <span className="text-[11px] font-black text-slate-600 tracking-tighter font-mono">{day.precipProb}%</span>
-              </div>
-
-              <div className="flex items-center gap-3 min-w-[80px] hidden sm:flex">
-                <Wind className="w-4 h-4 text-slate-800 group-hover/item:text-slate-600 transition-colors" />
-                <span className="text-[11px] font-black text-slate-700 tracking-tighter font-mono">{day.windSpeed}</span>
+            <div className="flex items-center gap-2 flex-1 justify-end">
+              <span className="text-sm font-black text-white tracking-tighter">{day.maxTemp}°</span>
+              <span className="text-xs font-black text-slate-700">{day.minTemp}°</span>
+              <div className="flex items-center gap-1 ml-2">
+                <CloudRain className="w-3 h-3 text-blue-500/50" />
+                <span className="text-[10px] font-black text-slate-600 font-mono">{day.precipProb}%</span>
               </div>
             </div>
           </motion.div>
