@@ -262,25 +262,25 @@ export const SupplyChain = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <button className="p-4 bg-slate-900 border border-white/5 rounded-2xl hover:bg-slate-800 transition-all shadow-neumorphic-sm active:shadow-neumorphic-inset-sm group">
-                <Maximize2 className="w-5 h-5 text-slate-600 group-hover:text-cyan-500 transition-colors" />
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+              <button className="p-3 sm:p-4 bg-slate-900 border border-white/5 rounded-2xl hover:bg-slate-800 transition-all shadow-neumorphic-sm active:shadow-neumorphic-inset-sm group">
+                <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-cyan-500 transition-colors" />
               </button>
-              <div className="relative group flex-1 lg:flex-none">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-700 group-focus-within:text-cyan-500 transition-colors" />
+              <div className="relative group flex-1 sm:flex-none">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-700 group-focus-within:text-cyan-500 transition-colors" />
                 <input 
                   type="text" 
-                  placeholder="Search Terminal..."
+                  placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-slate-900/50 border border-white/5 rounded-2xl w-full lg:w-64 pl-12 pr-4 py-4 text-xs font-black uppercase tracking-[0.1em] focus:outline-none focus:border-cyan-500/50 transition-all shadow-neumorphic-inset-sm text-white placeholder:text-slate-800"
+                  className="bg-slate-900/50 border border-white/5 rounded-2xl w-full sm:w-48 lg:w-64 pl-10 pr-4 py-3 text-xs font-black uppercase tracking-[0.1em] focus:outline-none focus:border-cyan-500/50 transition-all shadow-neumorphic-inset-sm text-white placeholder:text-slate-800"
                 />
               </div>
               <div className="flex items-center gap-2">
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as any)}
-                  className="bg-slate-900 border border-white/5 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 focus:outline-none focus:border-cyan-500/50 shadow-neumorphic-inset-sm"
+                  className="bg-slate-900 border border-white/5 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 focus:outline-none focus:border-cyan-500/50 shadow-neumorphic-inset-sm"
                 >
                   <option value="eta">ETA</option>
                   <option value="progress">Progress</option>
@@ -288,13 +288,13 @@ export const SupplyChain = () => {
                 </select>
                 <button
                   onClick={() => setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')}
-                  className="p-3 bg-slate-900 border border-white/5 rounded-xl hover:bg-slate-800 transition-all shadow-neumorphic-sm active:shadow-neumorphic-inset-sm"
+                  className="p-2 bg-slate-900 border border-white/5 rounded-xl hover:bg-slate-800 transition-all shadow-neumorphic-sm active:shadow-neumorphic-inset-sm"
                 >
                   {sortDirection === 'asc' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                 </button>
               </div>
-              <button className="p-4 bg-slate-900 border border-white/5 rounded-2xl hover:bg-slate-800 transition-all shadow-neumorphic-sm active:shadow-neumorphic-inset-sm group">
-                <Filter className="w-5 h-5 text-slate-600 group-hover:text-cyan-500 transition-colors" />
+              <button className="p-3 sm:p-4 bg-slate-900 border border-white/5 rounded-2xl hover:bg-slate-800 transition-all shadow-neumorphic-sm active:shadow-neumorphic-inset-sm group">
+                <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-cyan-500 transition-colors" />
               </button>
             </div>
           </div>
