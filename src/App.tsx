@@ -67,10 +67,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex">
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex overflow-x-hidden">
       {/* Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-[120] w-72 bg-slate-950/80 backdrop-blur-2xl border-r border-white/5 flex flex-col transition-transform duration-500",
+        "fixed inset-y-0 left-0 z-120 w-72 bg-slate-950/80 backdrop-blur-2xl border-r border-white/5 flex flex-col transition-transform duration-500",
         sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="p-8 border-b border-white/5">
@@ -107,15 +107,15 @@ export default function App() {
       {/* Sidebar overlay on mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-[110] bg-slate-950/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-110 bg-slate-950/60 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main */}
-      <div className="flex-1 lg:ml-72 flex flex-col min-h-screen">
+      <div className="flex-1 lg:ml-72 flex flex-col min-h-screen min-w-0">
         {/* Top bar */}
-        <header className="sticky top-0 z-[100] bg-slate-950/40 backdrop-blur-2xl border-b border-white/5 px-6 py-4 flex items-center justify-between">
+        <header className="sticky top-0 z-100 bg-slate-950/40 backdrop-blur-2xl border-b border-white/5 px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden p-3 bg-slate-900 border border-white/5 rounded-xl text-slate-500 hover:text-white transition-all"
