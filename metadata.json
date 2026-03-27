@@ -1,0 +1,5 @@
+{
+  "name": "AgriConnect 2026",
+  "description": "A high-performance agricultural supply chain platform connecting Kericho farmers with Nairobi markets, featuring NeuralAgri growth predictions and M-Pesa escrow.",
+  "requestFramePermissions": ["geolocation"]
+}

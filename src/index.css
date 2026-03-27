@@ -1,0 +1,180 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-slate-950: var(--bg-950);
+  --color-slate-900: var(--bg-900);
+  --color-slate-800: var(--bg-800);
+  --color-slate-700: var(--bg-700);
+  --color-emerald-500: #10b981;
+  --color-emerald-400: #34d399;
+  --color-emerald-900: #064e3b;
+  --color-cyan-500: #06b6d4;
+  
+  /* Premium Tactile Shadows */
+  --shadow-tactile: var(--shadow-tactile);
+  --shadow-neumorphic: var(--shadow-neumorphic);
+  --shadow-neumorphic-sm: var(--shadow-neumorphic-sm);
+  --shadow-neumorphic-lg: 20px 20px 40px #010101, -20px -20px 40px #0a0a0a;
+  --shadow-neumorphic-inset: var(--shadow-neumorphic-inset);
+  --shadow-neumorphic-inset-sm: var(--shadow-neumorphic-inset-sm);
+  
+  /* High-Fidelity Tactile Shadows */
+  --shadow-tactile-premium: var(--shadow-tactile-premium);
+  --shadow-glow-emerald-lg: 0 0 40px rgba(16, 185, 129, 0.15);
+  
+  /* Glow Effects */
+  --shadow-glow-emerald: 0 0 20px rgba(16, 185, 129, 0.2);
+  --shadow-glow-amber: 0 0 20px rgba(245, 158, 11, 0.2);
+  --shadow-glow-rose: 0 0 20px rgba(244, 63, 94, 0.2);
+  --shadow-glow-cyan: 0 0 20px rgba(6, 182, 212, 0.2);
+  
+  /* Dynamic Theme Variables */
+  --color-accent: var(--theme-accent, #10b981);
+  --color-accent-glow: var(--theme-accent-glow, rgba(16, 185, 129, 0.3));
+  
+  --animate-shimmer: shimmer 1.5s linear infinite;
+}
+
+:root {
+  --bg-950: #0A192F; /* Midnight Navy */
+  --bg-900: #1E293B; /* Slate Gray */
+  --bg-800: #334155;
+  --bg-700: #475569;
+  --text-white: #ffffff;
+  --text-slate-400: #94a3b8;
+  --text-slate-500: #64748b;
+  --text-slate-600: #475569;
+  --text-slate-700: #334155;
+  --bg-950-rgb: 10, 25, 47;
+  --bg-900-rgb: 30, 41, 59;
+  --text-white-rgb: 255, 255, 255;
+  /* ... (keep shadows) ... */
+  --shadow-neumorphic: 12px 12px 24px #010101, -12px -12px 24px #0a0a0a;
+  --shadow-neumorphic-sm: 6px 6px 12px #010101, -6px -6px 12px #0a0a0a;
+  --shadow-neumorphic-inset: inset 8px 8px 16px #010101, inset -8px -8px 16px #0a0a0a;
+  --shadow-neumorphic-inset-sm: inset 4px 4px 8px #010101, inset -4px -4px 8px #0a0a0a;
+  --shadow-tactile: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 4px 10px -5px rgba(0, 0, 0, 0.3);
+  --shadow-tactile-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 10px 20px -10px rgba(0, 0, 0, 0.5);
+  
+  /* Accent/Success */
+  --theme-accent: #C5A059; /* Copper Gold */
+  --theme-accent-glow: rgba(197, 160, 89, 0.3);
+  --theme-success: #00F2FF; /* Electric Cyan */
+}
+
+html:not(.dark) {
+  --bg-950: #f8fafc;
+  --bg-900: #f1f5f9;
+  --bg-800: #e2e8f0;
+  --bg-700: #cbd5e1;
+  --text-white: #0f172a;
+  --text-slate-400: #475569;
+  --text-slate-500: #64748b;
+  --text-slate-600: #94a3b8;
+  --text-slate-700: #cbd5e1;
+  --bg-950-rgb: 248, 250, 252;
+  --bg-900-rgb: 241, 245, 249;
+  --text-white-rgb: 15, 23, 42;
+  --shadow-neumorphic: 12px 12px 24px #d1d5db, -12px -12px 24px #ffffff;
+  --shadow-neumorphic-sm: 6px 6px 12px #d1d5db, -6px -6px 12px #ffffff;
+  --shadow-neumorphic-inset: inset 8px 8px 16px #d1d5db, inset -8px -8px 16px #ffffff;
+  --shadow-neumorphic-inset-sm: inset 4px 4px 8px #d1d5db, inset -4px -4px 8px #ffffff;
+  --shadow-tactile: 0 10px 30px -10px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.05);
+  --shadow-tactile-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 10px 20px -10px rgba(0, 0, 0, 0.1);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-950);
+    color: var(--text-slate-400);
+    @apply font-sans antialiased selection:bg-emerald-500/20;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-white);
+    @apply tracking-tight font-sans;
+  }
+
+  /* Custom Scrollbar for Premium Feel */
+  ::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: var(--bg-950);
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--bg-800);
+    @apply rounded-full hover:bg-slate-700 transition-colors;
+  }
+}
+
+@layer components {
+  .tactile-card {
+    background-color: rgba(var(--bg-900-rgb, 15, 23, 42), 0.4);
+    border-color: rgba(var(--text-white-rgb, 255, 255, 255), 0.05);
+    @apply backdrop-blur-md rounded-[2.5rem] shadow-tactile transition-all duration-500;
+  }
+  
+  .neumorphic-button {
+    background-color: var(--bg-900);
+    box-shadow: var(--shadow-neumorphic);
+    @apply transition-all duration-300 rounded-2xl;
+  }
+  .neumorphic-button:active {
+    box-shadow: var(--shadow-neumorphic-inset);
+  }
+
+  .neumorphic-button-sm {
+    background-color: var(--bg-900);
+    box-shadow: var(--shadow-neumorphic-sm);
+    @apply transition-all duration-300 rounded-xl;
+  }
+  .neumorphic-button-sm:active {
+    box-shadow: var(--shadow-neumorphic-inset-sm);
+  }
+  
+  .glass-panel {
+    background-color: rgba(var(--bg-950-rgb, 2, 6, 23), 0.5);
+    @apply backdrop-blur-xl border-b border-white/5;
+  }
+
+  .premium-input {
+    background-color: rgba(var(--bg-900-rgb, 15, 23, 42), 0.3);
+    border-color: rgba(var(--text-white-rgb, 255, 255, 255), 0.05);
+    @apply rounded-2xl py-4 px-6 text-sm font-medium focus:outline-none focus:border-emerald-500/50 transition-all shadow-neumorphic-inset focus:shadow-neumorphic-inset placeholder:text-slate-700;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Fluid Motion Utilities */
+.fluid-entrance {
+  animation: fluidEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fluidEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
