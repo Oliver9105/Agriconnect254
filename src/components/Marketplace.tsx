@@ -630,7 +630,7 @@ export const Marketplace = () => {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="relative w-full max-w-6xl h-[600px] bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-[4rem] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.6)]"
+              className="relative w-full max-w-6xl h-[60vh] sm:h-[600px] bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.6)]"
             >
               <AgriMap batches={[selectedProduct]} />
               <button 
