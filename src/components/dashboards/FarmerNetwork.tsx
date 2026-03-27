@@ -342,7 +342,7 @@ export const FarmerNetwork = () => {
                   className="space-y-16"
                 >
                   {/* Network Stats */}
-                  <div className="grid grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                     {[
                       { label: 'Total Connections', value: '1,240' },
                       { label: 'Active Today', value: '450' },
