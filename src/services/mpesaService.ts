@@ -1,5 +1,6 @@
 export const initiateStkPush = async (amount: number, phoneNumber: string): Promise<{ success: boolean; message?: string; checkoutRequestId?: string }> => {
-  console.log(`Initiating STK Push for KES ${amount} to ${phoneNumber}`);
+  const safePhone = phoneNumber.replace(/[\r\n]/g, '');
+  console.log(`Initiating STK Push for KES ${amount} to ${safePhone}`);
   // Simulate API call
   return new Promise((resolve) => {
     setTimeout(() => {
