@@ -498,9 +498,9 @@ export const Marketplace = () => {
               exit="exit"
               className="relative w-full max-w-6xl max-h-[90vh] bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] lg:rounded-[4rem] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.6)] flex flex-col lg:flex-row"
             >
-              <div className="w-full lg:w-1/2 h-64 sm:h-96 lg:h-full relative p-3 flex-shrink-0">
-                <div className="w-full h-full rounded-[2rem] overflow-hidden border border-white/5 shadow-tactile">
-                  <img src={selectedProduct.image} alt={selectedProduct.title} className="w-full h-full object-cover object-center grayscale-[0.1]" />
+              <div className="w-full lg:w-1/2 h-64 sm:h-96 lg:h-auto relative p-3 flex-shrink-0 self-stretch">
+                <div className="w-full h-full min-h-[16rem] rounded-[2rem] overflow-hidden border border-white/5 shadow-tactile">
+                  <img src={selectedProduct.image} alt={selectedProduct.title} className="w-full h-full object-cover object-top grayscale-[0.1]" />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent lg:bg-gradient-to-r pointer-events-none" />
                 <button 
