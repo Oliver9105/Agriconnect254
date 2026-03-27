@@ -152,29 +152,29 @@ export const Messaging = () => {
                 >
                   <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 mt-2 mb-6 shadow-neumorphic">
                     {/* Chat Window Content (moved from right pane) */}
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-6">
-                        <div className="w-14 h-14 rounded-2xl bg-slate-900 overflow-hidden border border-white/5 shadow-tactile p-0.5">
-                          <div className="w-full h-full rounded-xl overflow-hidden border border-white/5">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 flex-none rounded-xl bg-slate-900 overflow-hidden border border-white/5 shadow-tactile p-0.5">
+                          <div className="w-full h-full rounded-lg overflow-hidden">
                             <img src={selectedChat.image} alt={selectedChat.name} className="w-full h-full object-cover" />
                           </div>
                         </div>
-                        <div>
-                          <h4 className="text-xl font-black text-white tracking-tighter drop-shadow-2xl">{selectedChat.name}</h4>
-                          <div className="flex items-center gap-3 mt-1.5">
-                            <div className={cn("w-2.5 h-2.5 rounded-full shadow-glow-emerald animate-pulse", selectedChat.online ? "bg-emerald-500" : "bg-slate-700")} />
-                            <p className="text-[10px] text-slate-600 font-black uppercase tracking-[0.3em]">
-                              {selectedChat.online ? 'Active Node' : 'Offline'}
+                        <div className="min-w-0">
+                          <h4 className="text-base font-black text-white tracking-tighter truncate">{selectedChat.name}</h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className={cn("w-2 h-2 flex-none rounded-full", selectedChat.online ? "bg-emerald-500" : "bg-slate-700")} />
+                            <p className="text-[9px] text-slate-600 font-black uppercase tracking-[0.2em] truncate">
+                              {selectedChat.online ? 'Active' : 'Offline'}
                             </p>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <button className="p-4 bg-slate-950 border border-white/5 rounded-2xl text-slate-600 hover:text-emerald-400 transition-all shadow-neumorphic active:shadow-neumorphic-inset group">
-                          <Phone className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      <div className="flex items-center gap-2 flex-none">
+                        <button className="p-3 bg-slate-950 border border-white/5 rounded-xl text-slate-600 hover:text-emerald-400 transition-all shadow-neumorphic active:shadow-neumorphic-inset">
+                          <Phone className="w-4 h-4" />
                         </button>
-                        <button className="p-4 bg-slate-950 border border-white/5 rounded-2xl text-slate-600 hover:text-emerald-400 transition-all shadow-neumorphic active:shadow-neumorphic-inset group">
-                          <Video className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                        <button className="p-3 bg-slate-950 border border-white/5 rounded-xl text-slate-600 hover:text-emerald-400 transition-all shadow-neumorphic active:shadow-neumorphic-inset">
+                          <Video className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
