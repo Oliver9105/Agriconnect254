@@ -32,6 +32,8 @@ interface BatchDetailModalProps {
 export const BatchDetailModal = ({ isOpen, onClose, batch }: BatchDetailModalProps) => {
   if (!batch) return null;
 
+  const safePhone = batch.driverPhone.replace(/[^0-9+\-\s()]/g, '');
+
   return (
     <AnimatePresence>
       {isOpen && (
