@@ -84,10 +84,10 @@ export const Messaging = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col bg-slate-950 border border-white/5 rounded-[3rem] overflow-hidden animate-in fade-in duration-1000 shadow-[0_50px_100px_rgba(0,0,0,0.6)] font-sans selection:bg-emerald-500/30">
+    <div className="h-[calc(100vh-12rem)] flex flex-col bg-slate-950 border border-white/5 rounded-[2rem] sm:rounded-[3rem] overflow-hidden animate-in fade-in duration-1000 shadow-[0_50px_100px_rgba(0,0,0,0.6)] font-sans selection:bg-emerald-500/30">
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto scrollbar-hide p-6 space-y-3">
-        <div className="p-10 border-b border-white/5">
+        <div className="p-5 sm:p-10 border-b border-white/5">
           <h3 className="text-xs font-black text-white uppercase tracking-[0.4em] mb-8 opacity-80">Communications</h3>
           <div className="relative group">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-700 group-focus-within:text-emerald-500 transition-colors" />
