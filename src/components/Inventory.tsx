@@ -54,11 +54,11 @@ export const Inventory = () => {
   );
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+    <div className="space-y-8 sm:space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
         <div>
-          <h2 className="text-5xl font-black text-white tracking-tighter mb-3 drop-shadow-2xl">Inventory Hub</h2>
+        <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tighter mb-3 drop-shadow-2xl">Inventory Hub</h2>
           <p className="text-slate-600 text-sm font-black uppercase tracking-[0.2em] opacity-80">Real-time stock management & SKU tracking across the supply network</p>
         </div>
         
@@ -104,7 +104,7 @@ export const Inventory = () => {
       </div>
 
       {/* Inventory Table */}
-      <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 overflow-hidden rounded-[4rem] shadow-neumorphic">
+      <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 overflow-hidden rounded-[2rem] sm:rounded-[4rem] shadow-neumorphic">
         <div className="overflow-x-auto scrollbar-hide">
           <table className="w-full text-left border-collapse min-w-[1100px]">
             <thead>
