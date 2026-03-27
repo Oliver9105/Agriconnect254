@@ -382,8 +382,8 @@ export const Marketplace = () => {
                 onClick={() => setSelectedProduct(item)}
                 className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-emerald-500/30 transition-all duration-500 flex flex-col cursor-pointer shadow-neumorphic"
               >
-                <div className="relative h-60 overflow-hidden p-1">
-                  <div className="w-full h-full rounded-[2.2rem] overflow-hidden border border-white/5">
+                <div className="relative h-60 overflow-hidden">
+                  <div className="w-full h-full rounded-t-[2.5rem] overflow-hidden border-b border-white/5">
                     <img 
                       src={item.image} 
                       alt={item.title} 
