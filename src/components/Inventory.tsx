@@ -62,9 +62,9 @@ export const Inventory = () => {
           <p className="text-slate-600 text-sm font-black uppercase tracking-[0.2em] opacity-80">Real-time stock management & SKU tracking across the supply network</p>
         </div>
         
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-3">
           <div className={cn(
-            "flex items-center gap-3 px-6 py-3 bg-slate-950 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 shadow-neumorphic-inset-sm",
+            "flex items-center gap-3 px-4 py-3 bg-slate-950 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 shadow-neumorphic-inset-sm",
             isSyncing ? "text-emerald-500 shadow-glow-emerald" : "text-slate-700"
           )}>
             <RefreshCw className={cn("w-4 h-4", isSyncing && "animate-spin")} />
@@ -72,13 +72,13 @@ export const Inventory = () => {
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-4 bg-slate-900 text-emerald-500 px-10 py-5 rounded-[2.5rem] font-black text-xs uppercase tracking-[0.3em] hover:shadow-glow-emerald hover:scale-[1.05] active:scale-95 transition-all shadow-neumorphic border border-white/5"
+            className="flex items-center gap-3 bg-slate-900 text-emerald-500 px-6 py-4 rounded-[2.5rem] font-black text-xs uppercase tracking-[0.3em] hover:shadow-glow-emerald hover:scale-[1.05] active:scale-95 transition-all shadow-neumorphic border border-white/5"
           >
-            <Plus className="w-6 h-6" />
+            <Plus className="w-5 h-5" />
             Add New Item
           </button>
-          <button className="p-5 bg-slate-950 border border-white/5 rounded-[1.5rem] hover:bg-slate-900 transition-all shadow-neumorphic active:shadow-neumorphic-inset group">
-            <Download className="w-6 h-6 text-slate-700 group-hover:text-emerald-500 transition-colors" />
+          <button className="p-4 bg-slate-950 border border-white/5 rounded-[1.5rem] hover:bg-slate-900 transition-all shadow-neumorphic active:shadow-neumorphic-inset group flex-none">
+            <Download className="w-5 h-5 text-slate-700 group-hover:text-emerald-500 transition-colors" />
           </button>
         </div>
       </div>
