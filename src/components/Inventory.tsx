@@ -106,7 +106,7 @@ export const Inventory = () => {
       {/* Inventory Table */}
       <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 overflow-hidden rounded-[2rem] sm:rounded-[4rem] shadow-neumorphic">
         <div className="overflow-x-auto scrollbar-hide">
-          <table className="w-full text-left border-collapse min-w-[1100px]">
+          <table className="w-full text-left border-collapse min-w-[700px]">
             <thead>
               <tr className="border-b border-white/5 bg-slate-950/80 backdrop-blur-3xl">
                 <th className="px-12 py-10 text-[10px] font-black text-slate-700 uppercase tracking-[0.4em]">SKU / Item</th>
