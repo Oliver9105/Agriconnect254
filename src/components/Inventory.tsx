@@ -89,10 +89,10 @@ export const Inventory = () => {
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-800 group-focus-within:text-emerald-500 transition-colors" />
           <input 
             type="text" 
-            placeholder="Search inventory by SKU, name or category..." 
+            placeholder="Search by SKU, name or category..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-16 py-6 text-sm font-black uppercase tracking-[0.1em] rounded-[2rem] bg-slate-950/50 border border-white/5 text-white placeholder:text-slate-800 focus:outline-none focus:border-emerald-500/50 focus:shadow-glow-emerald transition-all shadow-neumorphic-inset"
+            className="w-full pl-11 py-4 text-xs font-black uppercase tracking-[0.1em] rounded-[2rem] bg-slate-950/50 border border-white/5 text-white placeholder:text-slate-800 focus:outline-none focus:border-emerald-500/50 transition-all shadow-neumorphic-inset"
           />
         </div>
         <div className="lg:col-span-3">
@@ -188,29 +188,29 @@ export const Inventory = () => {
             Critical Stock Alerts
           </h3>
           <div className="space-y-8">
-            <div className="flex items-center justify-between p-6 bg-slate-950/50 border border-white/5 rounded-[2rem] shadow-neumorphic-inset-sm group hover:border-amber-500/30 transition-all">
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 shadow-tactile border border-amber-500/20">
-                  <Package className="w-7 h-7" />
+            <div className="flex items-center justify-between p-4 bg-slate-950/50 border border-white/5 rounded-[2rem] shadow-neumorphic-inset-sm group hover:border-amber-500/30 transition-all">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 flex-none rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20">
+                  <Package className="w-5 h-5" />
                 </div>
-                <div>
-                  <p className="text-base font-black text-white tracking-tight">Organic Tea Leaves</p>
-                  <p className="text-[10px] text-slate-700 font-black uppercase tracking-[0.2em] mt-1.5">Stock below threshold (850 KG)</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-white tracking-tight truncate">Organic Tea Leaves</p>
+                  <p className="text-[9px] text-slate-700 font-black uppercase tracking-[0.1em] mt-1">Low stock: 850 KG</p>
                 </div>
               </div>
-              <button className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] hover:text-amber-400 transition-all px-6 py-3 bg-amber-500/5 rounded-xl border border-amber-500/10 shadow-neumorphic-sm active:scale-95">Restock</button>
+              <button className="flex-none ml-2 text-[9px] font-black text-amber-500 uppercase tracking-[0.2em] px-3 py-2 bg-amber-500/5 rounded-lg border border-amber-500/10 active:scale-95">Restock</button>
             </div>
-            <div className="flex items-center justify-between p-6 bg-slate-950/50 border border-white/5 rounded-[2rem] shadow-neumorphic-inset-sm group hover:border-rose-500/30 transition-all">
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500 shadow-tactile border border-rose-500/20">
-                  <Package className="w-7 h-7" />
+            <div className="flex items-center justify-between p-4 bg-slate-950/50 border border-white/5 rounded-[2rem] shadow-neumorphic-inset-sm group hover:border-rose-500/30 transition-all">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 flex-none rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500 border border-rose-500/20">
+                  <Package className="w-5 h-5" />
                 </div>
-                <div>
-                  <p className="text-base font-black text-white tracking-tight">Macadamia Nuts</p>
-                  <p className="text-[10px] text-slate-700 font-black uppercase tracking-[0.2em] mt-1.5">Out of Stock</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-white tracking-tight truncate">Macadamia Nuts</p>
+                  <p className="text-[9px] text-slate-700 font-black uppercase tracking-[0.1em] mt-1">Out of Stock</p>
                 </div>
               </div>
-              <button className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] hover:text-rose-400 transition-all px-6 py-3 bg-rose-500/5 rounded-xl border border-rose-500/10 shadow-neumorphic-sm active:scale-95">Order Now</button>
+              <button className="flex-none ml-2 text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] px-3 py-2 bg-rose-500/5 rounded-lg border border-rose-500/10 active:scale-95">Order</button>
             </div>
           </div>
         </div>
