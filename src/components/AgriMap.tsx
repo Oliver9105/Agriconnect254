@@ -98,15 +98,15 @@ export const AgriMap = ({ batches }: { batches: any[] }) => {
       </MapContainer>
 
       {/* UI Overlay */}
-      <div className="absolute bottom-6 left-6 z-[1000] flex flex-col gap-2">
+      <div className="absolute bottom-4 left-4 z-[1000]">
         <button 
           onClick={() => setShowHubs(!showHubs)}
-          className={`p-4 rounded-xl flex items-center gap-2 transition-all ${
+          className={`px-3 py-2 rounded-xl flex items-center gap-2 transition-all text-xs font-bold uppercase tracking-wider ${
             showHubs ? "bg-emerald-500 text-white" : "bg-white/90 backdrop-blur text-slate-800"
           }`}
         >
-          <Building2 size={20} />
-          <span className="text-xs font-bold uppercase tracking-wider">Toggle Hubs</span>
+          <Building2 size={16} />
+          <span>Toggle Hubs</span>
         </button>
       </div>
     </div>
