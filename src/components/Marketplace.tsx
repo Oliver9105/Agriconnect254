@@ -345,21 +345,21 @@ export const Marketplace = () => {
         {/* Featured Banner */}
         <motion.div 
           variants={fadeInUp}
-          className="relative h-[28rem] rounded-[3.5rem] overflow-hidden group cursor-pointer border border-white/5 shadow-tactile-premium"
+          className="relative h-48 sm:h-72 lg:h-[28rem] rounded-[2rem] sm:rounded-[3.5rem] overflow-hidden group cursor-pointer border border-white/5 shadow-tactile-premium"
         >
           <img 
             src="https://picsum.photos/seed/agri_banner/1600/600" 
             alt="Featured" 
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-40 grayscale-[0.3]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent flex flex-col justify-center p-12 lg:p-20">
-            <div className="bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 text-[9px] font-black uppercase tracking-[0.4em] px-5 py-2 rounded-full w-fit mb-6 shadow-glow-emerald backdrop-blur-md">
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent flex flex-col justify-center p-5 sm:p-12 lg:p-20">
+            <div className="bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 text-[9px] font-black uppercase tracking-[0.4em] px-3 py-1.5 rounded-full w-fit mb-3 sm:mb-6 shadow-glow-emerald backdrop-blur-md">
               Seasonal Special
             </div>
-            <h3 className="text-5xl lg:text-7xl font-black text-white mb-6 tracking-tighter leading-none drop-shadow-2xl">Kericho Gold Harvest</h3>
-            <p className="text-slate-400 max-w-lg mb-10 text-lg font-black uppercase tracking-widest opacity-70 leading-relaxed">Bulk orders for the 2026 tea season are now open. Secure your batch with verified digital certificates.</p>
-            <button className="bg-emerald-600 text-white px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-3 w-fit hover:shadow-glow-emerald hover:scale-[1.02] transition-all shadow-neumorphic border border-white/10 active:scale-95">
-              View Collection <ArrowRight className="w-4 h-4" />
+            <h3 className="text-xl sm:text-5xl lg:text-7xl font-black text-white mb-2 sm:mb-6 tracking-tighter leading-none drop-shadow-2xl">Kericho Gold Harvest</h3>
+            <p className="hidden sm:block text-slate-400 max-w-lg mb-6 sm:mb-10 text-sm sm:text-lg font-black uppercase tracking-widest opacity-70 leading-relaxed">Bulk orders for the 2026 tea season are now open.</p>
+            <button className="bg-emerald-600 text-white px-4 sm:px-10 py-2.5 sm:py-5 rounded-xl sm:rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 w-fit hover:shadow-glow-emerald transition-all shadow-neumorphic border border-white/10 active:scale-95">
+              View Collection <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
           </div>
         </motion.div>
@@ -511,7 +511,7 @@ export const Marketplace = () => {
                 </button>
               </div>
               
-              <div className="flex-1 p-12 lg:p-20 overflow-y-auto max-h-[60vh] lg:max-h-none scrollbar-hide">
+              <div className="flex-1 p-5 sm:p-12 lg:p-20 overflow-y-auto max-h-[60vh] lg:max-h-none scrollbar-hide">
                 <div className="flex items-center justify-between mb-10">
                   <span className="px-8 py-3 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] rounded-full border border-emerald-500/20 shadow-glow-emerald backdrop-blur-md">
                     {selectedProduct.category}
@@ -524,9 +524,9 @@ export const Marketplace = () => {
                   </button>
                 </div>
 
-                <h3 className="text-6xl font-black text-white tracking-tighter mb-8 leading-tight drop-shadow-2xl">{selectedProduct.title}</h3>
+                <h3 className="text-3xl sm:text-6xl font-black text-white tracking-tighter mb-5 sm:mb-8 leading-tight drop-shadow-2xl">{selectedProduct.title}</h3>
                 
-                <div className="flex items-center gap-10 mb-12">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-10 mb-8 sm:mb-12">
                   <div className="flex items-center gap-4 bg-amber-500/5 px-6 py-3 rounded-2xl border border-amber-500/10 shadow-glow-amber">
                     <Star className="w-7 h-7 text-amber-500 fill-amber-500" />
                     <span className="text-2xl font-black text-white font-mono tracking-tighter">{selectedProduct.rating}</span>
@@ -571,12 +571,12 @@ export const Marketplace = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-10 mb-12">
-                  <div className="p-10 bg-slate-950/50 border border-white/5 rounded-[2.5rem] shadow-neumorphic-inset">
+                <div className="grid grid-cols-2 gap-4 sm:gap-10 mb-8 sm:mb-12">
+                  <div className="p-5 sm:p-10 bg-slate-950/50 border border-white/5 rounded-[2rem] shadow-neumorphic-inset">
                     <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.4em] mb-3 opacity-80">Price</p>
-                    <p className="text-4xl font-black text-emerald-400 tracking-tighter font-mono drop-shadow-glow-emerald">{selectedProduct.price}</p>
+                    <p className="text-2xl sm:text-4xl font-black text-emerald-400 tracking-tighter font-mono drop-shadow-glow-emerald">{selectedProduct.price}</p>
                   </div>
-                  <div className="p-10 bg-slate-950/50 border border-white/5 rounded-[2.5rem] shadow-neumorphic-inset">
+                  <div className="p-5 sm:p-10 bg-slate-950/50 border border-white/5 rounded-[2rem] shadow-neumorphic-inset">
                     <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.4em] mb-3 opacity-80">Availability</p>
                     <p className="text-2xl font-black text-white tracking-tight uppercase tracking-widest text-xs">{selectedProduct.quantity}</p>
                   </div>
@@ -597,15 +597,15 @@ export const Marketplace = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-8">
+                <div className="flex gap-4">
                   <button 
                     onClick={handlePurchase}
-                    className="flex-1 bg-emerald-600 text-white py-8 rounded-[2rem] font-black text-sm hover:shadow-glow-emerald transition-all uppercase tracking-[0.4em] active:scale-95 border border-white/10 shadow-neumorphic"
+                    className="flex-1 bg-emerald-600 text-white py-5 sm:py-8 rounded-[2rem] font-black text-xs sm:text-sm hover:shadow-glow-emerald transition-all uppercase tracking-[0.3em] active:scale-95 border border-white/10 shadow-neumorphic"
                   >
                     Initiate Trade
                   </button>
-                  <button className="p-8 bg-slate-950/50 text-white rounded-[2rem] font-black transition-all border border-white/5 shadow-neumorphic active:shadow-neumorphic-inset group">
-                    <ShoppingBag className="w-8 h-8 text-slate-700 group-hover:text-emerald-500 transition-colors" />
+                  <button className="p-5 sm:p-8 bg-slate-950/50 text-white rounded-[2rem] font-black transition-all border border-white/5 shadow-neumorphic active:shadow-neumorphic-inset group">
+                    <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-slate-700 group-hover:text-emerald-500 transition-colors" />
                   </button>
                 </div>
               </div>
