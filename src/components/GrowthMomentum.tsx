@@ -123,24 +123,24 @@ export const GrowthMomentum = () => {
             <MomentumGauge value={88} label="Overall Momentum" sublabel="Kericho Enterprise Sector" />
           </div>
 
-          <div className="grid grid-cols-2 gap-8">
-            <div className="bg-slate-950/50 p-8 rounded-[2.5rem] border border-white/5 shadow-neumorphic-inset-sm group/stat hover:bg-slate-950/80 transition-all duration-500">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-emerald-500/10 rounded-xl group-hover/stat:bg-emerald-500/20 transition-colors shadow-tactile">
-                  <Leaf className="w-5 h-5 text-emerald-500" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-slate-950/50 p-4 rounded-[1.5rem] border border-white/5 shadow-neumorphic-inset-sm group/stat hover:bg-slate-950/80 transition-all duration-500">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-2 bg-emerald-500/10 rounded-lg group-hover/stat:bg-emerald-500/20 transition-colors">
+                  <Leaf className="w-4 h-4 text-emerald-500" />
                 </div>
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Soil Health</span>
+                <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.1em]">Soil Health</span>
               </div>
-              <p className="text-3xl font-black text-white font-mono tracking-tighter drop-shadow-glow-emerald">94%</p>
+              <p className="text-2xl font-black text-white font-mono tracking-tighter">94%</p>
             </div>
-            <div className="bg-slate-950/50 p-8 rounded-[2.5rem] border border-white/5 shadow-neumorphic-inset-sm group/stat hover:bg-slate-950/80 transition-all duration-500">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-cyan-500/10 rounded-xl group-hover/stat:bg-cyan-500/20 transition-colors shadow-tactile">
-                  <Droplets className="w-5 h-5 text-cyan-500" />
+            <div className="bg-slate-950/50 p-4 rounded-[1.5rem] border border-white/5 shadow-neumorphic-inset-sm group/stat hover:bg-slate-950/80 transition-all duration-500">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-2 bg-cyan-500/10 rounded-lg group-hover/stat:bg-cyan-500/20 transition-colors">
+                  <Droplets className="w-4 h-4 text-cyan-500" />
                 </div>
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Hydration</span>
+                <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.1em]">Hydration</span>
               </div>
-              <p className="text-3xl font-black text-white font-mono tracking-tighter drop-shadow-glow-cyan">82%</p>
+              <p className="text-2xl font-black text-white font-mono tracking-tighter">82%</p>
             </div>
           </div>
         </div>
