@@ -158,8 +158,8 @@ export const GrowthMomentum = () => {
             </div>
           </div>
 
-          <div className="h-[400px] w-full bg-slate-950/60 rounded-[3.5rem] p-10 border border-white/5 shadow-neumorphic-inset relative overflow-hidden group/chart">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 pointer-events-none group-hover/chart:opacity-100 opacity-50 transition-opacity duration-1000" />
+          <div className="h-[400px] w-full bg-slate-950/60 rounded-[3.5rem] border border-white/5 shadow-neumorphic-inset relative group/chart">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 pointer-events-none group-hover/chart:opacity-100 opacity-50 transition-opacity duration-1000 rounded-[3.5rem]" />
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={MOCK_GROWTH_DATA}>
                 <defs>
