@@ -148,7 +148,7 @@ export default function App() {
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-6 lg:p-10 pb-24">
+        <main className="flex-1 p-4 sm:p-6 lg:p-10 pb-24">
           <AnimatePresence mode="wait">
             <motion.div
               key={view}
