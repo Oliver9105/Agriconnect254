@@ -215,13 +215,13 @@ export const Transactions = () => {
       {/* Filters & Search */}
       <div className="space-y-8">
         <div className="relative group">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-emerald-500 transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 group-focus-within:text-emerald-500 transition-colors" />
           <input 
             type="text" 
-            placeholder="Search transactions by ID, farmer or type..." 
+            placeholder="Search by ID, farmer or type..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-14 py-5 bg-slate-950/50 border border-white/5 rounded-2xl text-sm font-black uppercase tracking-[0.1em] text-white placeholder:text-slate-800 focus:outline-none focus:border-emerald-500/50 focus:shadow-glow-emerald transition-all shadow-neumorphic-inset"
+            className="w-full pl-11 py-4 bg-slate-950/50 border border-white/5 rounded-2xl text-xs font-black uppercase tracking-[0.1em] text-white placeholder:text-slate-800 focus:outline-none focus:border-emerald-500/50 transition-all shadow-neumorphic-inset"
           />
         </div>
 
