@@ -129,29 +129,29 @@ export const Transactions = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
         <div>
-          <h2 className="text-4xl font-black text-white tracking-tighter mb-2">Financial Ledger</h2>
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tighter mb-2">Financial Ledger</h2>
           <p className="text-slate-500 text-sm font-medium tracking-wide">Blockchain-verified transactions and escrow settlement history</p>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <button 
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "px-8 py-4 flex items-center gap-3 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all duration-500 border border-white/5 shadow-neumorphic",
+              "px-5 py-3 flex items-center gap-3 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all duration-500 border border-white/5 shadow-neumorphic",
               (showFilters || hasActiveFilters) ? "bg-slate-950 shadow-neumorphic-inset-sm text-emerald-500" : "bg-slate-900 text-slate-400 hover:text-white"
             )}
           >
-            <Filter className="w-5 h-5" />
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
+            <Filter className="w-4 h-4" />
+            {showFilters ? 'Hide' : 'Filters'}
             {hasActiveFilters && (
               <span className="w-2 h-2 bg-emerald-500 rounded-full shadow-glow-emerald" />
             )}
           </button>
           <button 
             onClick={exportToCSV}
-            className="p-4 bg-slate-900 border border-white/5 rounded-[1.5rem] shadow-neumorphic hover:shadow-glow-emerald transition-all group"
+            className="p-3 bg-slate-900 border border-white/5 rounded-[1.5rem] shadow-neumorphic hover:shadow-glow-emerald transition-all group"
           >
-            <Download className="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+            <Download className="w-4 h-4 text-slate-400 group-hover:text-emerald-500 transition-colors" />
           </button>
         </div>
       </div>
