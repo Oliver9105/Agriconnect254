@@ -147,14 +147,14 @@ export const GrowthMomentum = () => {
 
         {/* Middle Section: Chart */}
         <div className="xl:w-2/3 space-y-8 xl:space-y-12 min-w-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-10">
-              <button className="text-[11px] font-black text-white uppercase tracking-[0.4em] border-b-2 border-emerald-500 pb-3 transition-all hover:text-emerald-400">Momentum Trend</button>
-              <button className="text-[11px] font-black text-slate-600 uppercase tracking-[0.4em] hover:text-slate-400 transition-colors pb-3">Yield Forecast</button>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4 overflow-x-auto scrollbar-hide">
+              <button className="text-[11px] font-black text-white uppercase tracking-[0.3em] border-b-2 border-emerald-500 pb-2 whitespace-nowrap transition-all hover:text-emerald-400">Momentum Trend</button>
+              <button className="text-[11px] font-black text-slate-600 uppercase tracking-[0.3em] hover:text-slate-400 transition-colors pb-2 whitespace-nowrap">Yield Forecast</button>
             </div>
-            <div className="flex items-center gap-4 px-6 py-3 bg-slate-950 rounded-2xl border border-white/5 shadow-tactile-premium">
-              <Activity className="w-5 h-5 text-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] font-mono">Live Telemetry</span>
+            <div className="flex items-center gap-3 px-4 py-2 bg-slate-950 rounded-2xl border border-white/5 shadow-tactile-premium flex-none">
+              <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
+              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] font-mono">Live</span>
             </div>
           </div>
 
