@@ -98,20 +98,20 @@ const MomentumGauge = ({ value, label, sublabel }: { value: number, label: strin
 
 export const GrowthMomentum = () => {
   return (
-    <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[3.5rem] p-12 relative overflow-hidden group shadow-neumorphic transition-all duration-700 hover:border-emerald-500/20">
+    <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] sm:rounded-[3.5rem] p-6 sm:p-12 relative overflow-hidden group shadow-neumorphic transition-all duration-700 hover:border-emerald-500/20">
       {/* Background Glows */}
       <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-emerald-500/5 blur-[150px] rounded-full -mr-60 -mt-60 group-hover:bg-emerald-500/10 transition-all duration-1000 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[20rem] h-[20rem] bg-cyan-500/5 blur-[120px] rounded-full -ml-40 -mb-40 group-hover:bg-cyan-500/10 transition-all duration-1000 pointer-events-none" />
       
-      <div className="flex flex-col xl:flex-row gap-20 relative z-10">
+      <div className="flex flex-col xl:flex-row gap-10 xl:gap-20 relative z-10">
         {/* Left Section: Main Gauge & Stats */}
-        <div className="xl:w-1/3 space-y-16">
-          <div className="flex items-center gap-8 mb-4">
+        <div className="xl:w-1/3 space-y-8 xl:space-y-16">
+          <div className="flex items-center gap-4 sm:gap-8 mb-4">
             <div className="p-5 bg-slate-950 rounded-[2rem] border border-white/5 shadow-tactile-premium group-hover:shadow-glow-emerald transition-all duration-700">
               <TrendingUp className="w-8 h-8 text-emerald-400" />
             </div>
             <div>
-              <h3 className="text-4xl font-black text-white tracking-tighter drop-shadow-2xl">Growth Momentum</h3>
+              <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tighter drop-shadow-2xl">Growth Momentum</h3>
               <div className="flex items-center gap-3 mt-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-glow-emerald" />
                 <p className="text-emerald-500/60 text-[10px] font-black uppercase tracking-[0.4em]">Optimal Growth State</p>
@@ -146,7 +146,7 @@ export const GrowthMomentum = () => {
         </div>
 
         {/* Middle Section: Chart */}
-        <div className="xl:w-2/3 space-y-12">
+        <div className="xl:w-2/3 space-y-8 xl:space-y-12 min-w-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-10">
               <button className="text-[11px] font-black text-white uppercase tracking-[0.4em] border-b-2 border-emerald-500 pb-3 transition-all hover:text-emerald-400">Momentum Trend</button>
@@ -158,7 +158,7 @@ export const GrowthMomentum = () => {
             </div>
           </div>
 
-          <div className="h-[400px] w-full bg-slate-950/60 rounded-[3.5rem] border border-white/5 shadow-neumorphic-inset relative group/chart">
+          <div className="h-[280px] sm:h-[400px] w-full bg-slate-950/60 rounded-[2rem] sm:rounded-[3.5rem] border border-white/5 shadow-neumorphic-inset relative group/chart">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 pointer-events-none group-hover/chart:opacity-100 opacity-50 transition-opacity duration-1000 rounded-[3.5rem]" />
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={MOCK_GROWTH_DATA}>
