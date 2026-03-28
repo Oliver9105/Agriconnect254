@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Bell, 
@@ -12,47 +12,23 @@ import {
   Circle
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { fetchNotifications, markAllNotificationsRead } from '../services/apiService';
 
-const NOTIFICATIONS = [
-  {
-    id: 1,
-    title: 'Harvest Verified',
-    message: 'Batch B-102 has been successfully verified by KEPHIS.',
-    time: '5m ago',
-    type: 'success',
-    icon: ShieldCheck,
-    color: 'emerald'
-  },
-  {
-    id: 2,
-    title: 'New Message',
-    message: 'Samuel Koech sent you a message regarding the tea harvest.',
-    time: '12m ago',
-    type: 'message',
-    icon: MessageSquare,
-    color: 'blue'
-  },
-  {
-    id: 3,
-    title: 'Market Alert',
-    message: 'Tea prices in Nairobi have increased by 12% this morning.',
-    time: '1h ago',
-    type: 'market',
-    icon: BarChart3,
-    color: 'amber'
-  },
-  {
-    id: 4,
-    title: 'Logistics Update',
-    message: 'Driver John Kamau is 15 minutes away from Kericho Hub.',
-    time: '2h ago',
-    type: 'logistics',
-    icon: Truck,
-    color: 'blue'
-  }
-];
+const ICON_MAP: Record<string, any> = { ShieldCheck, MessageSquare, BarChart3, Truck };
 
 export const NotificationDrawer = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchNotifications().then(setNotifications).catch(console.error);
+    }
+  }, [isOpen]);
+
+  const handleClearAll = async () => {
+    await markAllNotificationsRead();
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
   return (
     <AnimatePresence>
       {isOpen && (
@@ -90,38 +66,46 @@ export const NotificationDrawer = ({ isOpen, onClose }: { isOpen: boolean, onClo
             </div>
 
             <div className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-hide">
-              {NOTIFICATIONS.map((notif, idx) => (
+              {notifications.map((notif, idx) => {
+                const Icon = ICON_MAP[notif.iconName] ?? Bell;
+                return (
                 <motion.div 
                   key={notif.id}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="bg-slate-900/40 backdrop-blur-xl border border-white/5 p-8 rounded-[2.5rem] hover:border-emerald-500/30 transition-all group cursor-pointer shadow-neumorphic relative overflow-hidden"
+                  className={cn(
+                    "bg-slate-900/40 backdrop-blur-xl border p-8 rounded-[2.5rem] hover:border-emerald-500/30 transition-all group cursor-pointer shadow-neumorphic relative overflow-hidden",
+                    notif.read ? "border-white/5" : "border-emerald-500/20"
+                  )}
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 blur-3xl rounded-full -mr-12 -mt-12 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   <div className="flex gap-6 relative z-10">
                     <div className={cn(
                       "p-4 rounded-2xl h-fit shadow-tactile border border-white/5 transition-all duration-500",
                       notif.color === 'emerald' ? "bg-emerald-500/10 text-emerald-500 group-hover:shadow-glow-emerald" :
-                      notif.color === 'blue' ? "bg-blue-500/10 text-blue-500 group-hover:shadow-glow-blue" :
+                      notif.color === 'blue' ? "bg-blue-500/10 text-blue-500" :
                       "bg-amber-500/10 text-amber-500 group-hover:shadow-glow-amber"
                     )}>
-                      <notif.icon className="w-5 h-5" />
+                      <Icon className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="text-sm font-black text-white uppercase tracking-tight group-hover:text-emerald-400 transition-colors">{notif.title}</h4>
-                        <span className="text-[9px] text-slate-600 font-black uppercase tracking-widest">{notif.time}</span>
+                        <span className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
+                          {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
                       </div>
                       <p className="text-slate-500 text-xs leading-relaxed font-medium opacity-80">{notif.message}</p>
                     </div>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="p-10 border-t border-white/5 bg-slate-950/20">
-              <button className="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.4em] hover:bg-emerald-500 transition-all shadow-glow-emerald flex items-center justify-center gap-4 border border-emerald-400/30 active:scale-95">
+              <button onClick={handleClearAll} className="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.4em] hover:bg-emerald-500 transition-all shadow-glow-emerald flex items-center justify-center gap-4 border border-emerald-400/30 active:scale-95">
                 Clear All Nodes <ArrowRight className="w-5 h-5" />
               </button>
             </div>
