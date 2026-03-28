@@ -30,7 +30,7 @@ export const EscrowSystem = () => {
   const handleLock = async () => {
     setLoading(true);
     try {
-      await initiateStkPush(45000, '+254712345678');
+      await initiateStkPush(45000, '+254712345678', 'escrow', 'Unknown');
       setStep('locked');
     } catch (error) {
       console.error('STK Push failed', error);

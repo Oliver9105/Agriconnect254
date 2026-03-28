@@ -1,10 +1,23 @@
-export const initiateStkPush = async (amount: number, phoneNumber: string): Promise<{ success: boolean; message?: string; checkoutRequestId?: string }> => {
-  const safePhone = phoneNumber.replace(/[\r\n]/g, '');
-  console.log(`Initiating STK Push for KES ${amount} to ${safePhone}`);
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true, checkoutRequestId: 'ws_CO_27032026_123456789' });
-    }, 2000);
+export const initiateStkPush = async (
+  amount: number,
+  phoneNumber: string,
+  itemId: number | string,
+  farmer: string
+): Promise<{ success: boolean; checkoutRequestId?: string; message?: string }> => {
+  const res = await fetch('/api/v1/mpesa/purchase/initiate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount, phoneNumber, itemId, farmer })
   });
+  const data = await res.json();
+  if (!res.ok) return { success: false, message: data.error };
+  return { success: true, checkoutRequestId: data.CheckoutRequestID };
+};
+
+export const pollPaymentStatus = async (
+  checkoutRequestId: string
+): Promise<'Pending' | 'Completed' | 'Failed' | 'NOT_FOUND'> => {
+  const res = await fetch(`/api/v1/mpesa/status/${checkoutRequestId}`);
+  const data = await res.json();
+  return data.status;
 };

@@ -21,7 +21,7 @@ export const StkPushModal = ({ isOpen, onClose, onConfirm, batchId }: StkPushMod
     setMessage('Initiating STK Push...');
     
     try {
-      const result = await initiateStkPush(45000, phone);
+      const result = await initiateStkPush(45000, phone, batchId, 'Unknown');
       if (result.success) {
         setStatus('waiting');
         setMessage('Waiting for PIN on your phone...');
