@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   History, 
   Search, 
@@ -23,15 +23,8 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { format } from 'date-fns';
-import { fadeInUp, staggerContainer, smoothTransition, tactileHover, tactileTap, scaleIn } from '../lib/animations';
-
-const TRANSACTIONS = [
-  { id: 'TXN-9842', timestamp: new Date().toISOString(), type: 'Escrow Release', amount: 'KES 124,500', amountRaw: 124500, method: 'M-Pesa', status: 'Completed', farmer: 'John Kamau' },
-  { id: 'TXN-9841', timestamp: new Date(Date.now() - 3600000).toISOString(), type: 'Market Sale', amount: 'KES 45,200', amountRaw: 45200, method: 'Bank Transfer', status: 'Pending', farmer: 'Sarah Wanjiku' },
-  { id: 'TXN-9840', timestamp: new Date(Date.now() - 86400000).toISOString(), type: 'Escrow Lock', amount: 'KES 850,000', amountRaw: 850000, method: 'M-Pesa', status: 'Completed', farmer: 'Peter Maina' },
-  { id: 'TXN-9839', timestamp: new Date(Date.now() - 172800000).toISOString(), type: 'Market Sale', amount: 'KES 12,400', amountRaw: 12400, method: 'Cash', status: 'Completed', farmer: 'Mary Atieno' },
-  { id: 'TXN-9838', timestamp: new Date(Date.now() - 259200000).toISOString(), type: 'Escrow Release', amount: 'KES 320,000', amountRaw: 320000, method: 'M-Pesa', status: 'Failed', farmer: 'David Kipkorir' },
-];
+import { fadeInUp, staggerContainer, tactileHover, tactileTap } from '../lib/animations';
+import { fetchTransactions } from '../services/apiService';
 
 const TransactionStat = ({ label, value, trend, icon: Icon, color }: { label: string, value: string, trend: string, icon: any, color: 'emerald' | 'rose' | 'amber' }) => (
   <motion.div 
@@ -62,23 +55,39 @@ const TransactionStat = ({ label, value, trend, icon: Icon, color }: { label: st
 );
 
 export const Transactions = () => {
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [typeFilter, setTypeFilter] = useState<string>('All');
   const [statusFilter, setStatusFilter] = useState<string>('All');
-  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
-    start: '',
-    end: ''
-  });
-  const [selectedTxn, setSelectedTxn] = useState<typeof TRANSACTIONS[0] | null>(null);
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
+  const [selectedTxn, setSelectedTxn] = useState<any>(null);
+
+  const loadTransactions = async () => {
+    try {
+      const data = await fetchTransactions({ type: typeFilter, status: statusFilter, q: searchQuery });
+      setTransactions(data);
+    } catch (e) {
+      console.error('Failed to load transactions', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { loadTransactions(); }, [typeFilter, statusFilter]);
+
+  useEffect(() => {
+    const t = setTimeout(loadTransactions, 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   const exportToCSV = () => {
     const headers = ['ID', 'Timestamp', 'Type', 'Amount', 'Method', 'Status', 'Farmer'];
     const csvContent = [
       headers.join(','),
-      ...filteredTransactions.map(t => [t.id, t.timestamp, t.type, t.amountRaw, t.method, t.status, t.farmer].join(','))
+      ...filteredTransactions.map(t => [t.id, t.createdAt, t.type, t.amountKes, t.method, t.status, t.farmer].join(','))
     ].join('\n');
-    
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -88,36 +97,26 @@ export const Transactions = () => {
   };
 
   const filteredTransactions = useMemo(() => {
-    return TRANSACTIONS.filter(txn => {
-      const matchesSearch = 
-        txn.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        txn.farmer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        txn.type.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesType = typeFilter === 'All' || txn.type === typeFilter;
-      const matchesStatus = statusFilter === 'All' || txn.status === statusFilter;
-      
+    return transactions.filter(txn => {
       let matchesDate = true;
-      if (dateRange.start) {
-        matchesDate = matchesDate && new Date(txn.timestamp) >= new Date(dateRange.start);
-      }
+      if (dateRange.start) matchesDate = matchesDate && new Date(txn.createdAt) >= new Date(dateRange.start);
       if (dateRange.end) {
-        const endDate = new Date(dateRange.end);
-        endDate.setHours(23, 59, 59, 999);
-        matchesDate = matchesDate && new Date(txn.timestamp) <= endDate;
+        const end = new Date(dateRange.end);
+        end.setHours(23, 59, 59, 999);
+        matchesDate = matchesDate && new Date(txn.createdAt) <= end;
       }
-
-      return matchesSearch && matchesType && matchesStatus && matchesDate;
+      return matchesDate;
     });
-  }, [searchQuery, typeFilter, statusFilter, dateRange]);
+  }, [transactions, dateRange]);
+
+  const totalVolume = transactions.reduce((s, t) => s + t.amountKes, 0);
+  const activeEscrow = transactions.filter(t => t.type === 'Escrow Lock' && t.status === 'Pending').reduce((s, t) => s + t.amountKes, 0);
+  const failedCount = transactions.filter(t => t.status === 'Failed').length;
 
   const resetFilters = () => {
-    setTypeFilter('All');
-    setStatusFilter('All');
-    setDateRange({ start: '', end: '' });
-    setSearchQuery('');
+    setTypeFilter('All'); setStatusFilter('All');
+    setDateRange({ start: '', end: '' }); setSearchQuery('');
   };
-
   const hasActiveFilters = typeFilter !== 'All' || statusFilter !== 'All' || dateRange.start !== '' || dateRange.end !== '';
 
   return (
@@ -180,7 +179,7 @@ export const Transactions = () => {
               <div className="space-y-6">
                 <div className="flex justify-between py-4 border-b border-white/5">
                   <span className="text-slate-500 font-medium">TXN ID</span>
-                  <span className="text-white font-mono font-bold">{selectedTxn.id}</span>
+                  <span className="text-white font-mono font-bold">{selectedTxn.id.slice(-8).toUpperCase()}</span>
                 </div>
                 <div className="flex justify-between py-4 border-b border-white/5">
                   <span className="text-slate-500 font-medium">Farmer</span>
@@ -188,11 +187,19 @@ export const Transactions = () => {
                 </div>
                 <div className="flex justify-between py-4 border-b border-white/5">
                   <span className="text-slate-500 font-medium">Amount</span>
-                  <span className="text-emerald-400 font-mono font-bold text-lg">{selectedTxn.amount}</span>
+                  <span className="text-emerald-400 font-mono font-bold text-lg">KES {selectedTxn.amountKes?.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between py-4 border-b border-white/5">
+                  <span className="text-slate-500 font-medium">Method</span>
+                  <span className="text-white font-bold">{selectedTxn.method}</span>
                 </div>
                 <div className="flex justify-between py-4 border-b border-white/5">
                   <span className="text-slate-500 font-medium">Status</span>
-                  <span className={cn("font-bold", selectedTxn.status === 'Completed' ? 'text-emerald-500' : 'text-amber-500')}>{selectedTxn.status}</span>
+                  <span className={cn("font-bold", selectedTxn.status === 'Completed' ? 'text-emerald-500' : selectedTxn.status === 'Failed' ? 'text-rose-500' : 'text-amber-500')}>{selectedTxn.status}</span>
+                </div>
+                <div className="flex justify-between py-4">
+                  <span className="text-slate-500 font-medium">Date</span>
+                  <span className="text-white font-bold">{format(new Date(selectedTxn.createdAt), 'MMM dd yyyy, HH:mm')}</span>
                 </div>
               </div>
             </motion.div>
@@ -207,9 +214,9 @@ export const Transactions = () => {
         animate="animate"
         className="grid grid-cols-1 md:grid-cols-3 gap-8"
       >
-        <TransactionStat label="Total Volume" value="KES 4.8M" trend="+8.2%" icon={TrendingUp} color="emerald" />
-        <TransactionStat label="Active Escrow" value="KES 1.2M" trend="+12.4%" icon={ShieldCheck} color="emerald" />
-        <TransactionStat label="Failed TXNs" value="2" trend="-1.5%" icon={Activity} color="rose" />
+        <TransactionStat label="Total Volume" value={`KES ${(totalVolume/1000).toFixed(1)}K`} trend="+8.2%" icon={TrendingUp} color="emerald" />
+        <TransactionStat label="Active Escrow" value={`KES ${(activeEscrow/1000).toFixed(1)}K`} trend="+12.4%" icon={ShieldCheck} color="emerald" />
+        <TransactionStat label="Failed TXNs" value={String(failedCount)} trend="-1.5%" icon={Activity} color="rose" />
       </motion.div>
 
       {/* Filters & Search */}
@@ -313,7 +320,11 @@ export const Transactions = () => {
             </thead>
             <tbody className="divide-y divide-white/5">
               <AnimatePresence mode="popLayout">
-                {filteredTransactions.length > 0 ? (
+                {loading ? (
+                  <tr><td colSpan={7} className="py-24 text-center">
+                    <div className="w-8 h-8 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto" />
+                  </td></tr>
+                ) : filteredTransactions.length > 0 ? (
                   filteredTransactions.map((txn) => (
                     <motion.tr 
                       key={txn.id}
@@ -326,19 +337,17 @@ export const Transactions = () => {
                     >
                       <td className="px-8 py-6">
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-mono text-emerald-500/70 mb-1 font-black">{txn.id}</span>
+                          <span className="text-[10px] font-mono text-emerald-500/70 mb-1 font-black">{txn.id.slice(-8).toUpperCase()}</span>
                           <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">
-                            {format(new Date(txn.timestamp), 'MMM dd, HH:mm')}
+                            {format(new Date(txn.createdAt), 'MMM dd, HH:mm')}
                           </span>
                         </div>
                       </td>
                       <td className="px-8 py-6">
-                        <span className="text-xs font-black text-white uppercase tracking-[0.1em] group-hover:text-emerald-400 transition-colors">
-                          {txn.type}
-                        </span>
+                        <span className="text-xs font-black text-white uppercase tracking-[0.1em] group-hover:text-emerald-400 transition-colors">{txn.type}</span>
                       </td>
                       <td className="px-8 py-6">
-                        <span className="text-sm font-black text-white font-mono">{txn.amount}</span>
+                        <span className="text-sm font-black text-white font-mono">KES {txn.amountKes.toLocaleString()}</span>
                       </td>
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
@@ -372,10 +381,7 @@ export const Transactions = () => {
                         </div>
                       </td>
                       <td className="px-8 py-6 text-right">
-                        <button 
-                          onClick={() => setSelectedTxn(txn)}
-                          className="p-3 text-slate-600 hover:text-white transition-all neumorphic-button-sm border border-white/5"
-                        >
+                        <button onClick={() => setSelectedTxn(txn)} className="p-3 text-slate-600 hover:text-white transition-all neumorphic-button-sm border border-white/5">
                           <MoreVertical className="w-4 h-4" />
                         </button>
                       </td>
