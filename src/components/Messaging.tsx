@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   MessageSquare, 
@@ -14,6 +14,7 @@ import {
   Circle
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { fetchMessages, sendMessage } from '../services/apiService';
 
 const CHATS = [
   {
@@ -68,19 +69,52 @@ const MESSAGES = [
 export const Messaging = () => {
   const [selectedChat, setSelectedChat] = useState<typeof CHATS[0] | null>(null);
   const [message, setMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState(MESSAGES.map(m => ({ ...m, read: true })));
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
-    const newMessage = {
-      id: chatMessages.length + 1,
+  const loadMessages = async (chatId: string) => {
+    setLoadingMessages(true);
+    try {
+      const data = await fetchMessages(String(chatId));
+      // Merge with seed messages if empty
+      if (data.length === 0) {
+        setChatMessages(MESSAGES.map(m => ({ ...m, read: true, createdAt: new Date().toISOString() })));
+      } else {
+        setChatMessages(data);
+      }
+    } catch {
+      setChatMessages(MESSAGES.map(m => ({ ...m, read: true, createdAt: new Date().toISOString() })));
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedChat) loadMessages(String(selectedChat.id));
+    else setChatMessages([]);
+  }, [selectedChat]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || !selectedChat) return;
+    const optimistic = {
+      id: Date.now(),
       text: message,
       sender: 'me',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      createdAt: new Date().toISOString(),
       read: false
     };
-    setChatMessages([...chatMessages, newMessage]);
+    setChatMessages(prev => [...prev, optimistic]);
     setMessage('');
+    try {
+      await sendMessage(String(selectedChat.id), optimistic.text, 'me');
+    } catch (e) {
+      console.error('Failed to send message', e);
+    }
   };
 
   return (
@@ -181,7 +215,11 @@ export const Messaging = () => {
 
                     {/* Messages Area */}
                     <div className="h-64 overflow-y-auto p-6 space-y-6 scrollbar-hide bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent">
-                      {chatMessages.map((msg) => (
+                      {loadingMessages ? (
+                        <div className="flex items-center justify-center h-full">
+                          <div className="w-6 h-6 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+                        </div>
+                      ) : chatMessages.map((msg) => (
                         <motion.div 
                           key={msg.id}
                           initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -200,13 +238,16 @@ export const Messaging = () => {
                             {msg.text}
                           </div>
                           <div className="flex items-center gap-3 mt-2 px-2">
-                            <span className="text-[8px] text-slate-700 font-black font-mono uppercase tracking-[0.2em]">{msg.time}</span>
+                            <span className="text-[8px] text-slate-700 font-black font-mono uppercase tracking-[0.2em]">
+                              {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                             {msg.sender === 'me' && (
-                              <CheckCheck className={cn("w-3 h-3", (msg as any).read ? "text-emerald-500" : "text-slate-600")} />
+                              <CheckCheck className={cn("w-3 h-3", msg.read ? "text-emerald-500" : "text-slate-600")} />
                             )}
                           </div>
                         </motion.div>
                       ))}
+                      <div ref={messagesEndRef} />
                     </div>
 
                     {/* Input Area */}
