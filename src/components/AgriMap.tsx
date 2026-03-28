@@ -66,15 +66,14 @@ export const AgriMap = ({ batches }: { batches: any[] }) => {
 
   return (
     <div className="h-full w-full rounded-3xl overflow-hidden relative border border-white/10 shadow-2xl">
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <MapContainer 
-        center={KERICHO} 
-        zoom={7} 
+        {...{ center: KERICHO, zoom: 7, zoomControl: false } as any}
         style={{ height: '100%', width: '100%' }}
-        zoomControl={false}
       >
         <TileLayer
           url="https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-          subdomains={['mt0','mt1','mt2','mt3']}
+          {...{ subdomains: ['mt0','mt1','mt2','mt3'] } as any}
           attribution='&copy; <a href="https://maps.google.com/">Google Maps</a>'
         />
         
@@ -82,7 +81,7 @@ export const AgriMap = ({ batches }: { batches: any[] }) => {
         {batches.map(batch => {
           if (!batch.originCoords) return null;
           return (
-            <Marker key={batch.id} position={batch.originCoords} icon={icons?.truck}>
+            <Marker key={batch.id} position={batch.originCoords} {...(icons?.truck ? { icon: icons.truck } : {}) as any}>
               <Popup>
                 <div className="p-2">
                   <h4 className="font-bold text-sm">{batch.title || batch.id}</h4>

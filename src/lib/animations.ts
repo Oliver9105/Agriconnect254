@@ -1,4 +1,5 @@
 import { Variants } from 'motion/react';
+import type { AnimationGeneratorType } from 'motion/react';
 
 export const fadeIn: Variants = {
   initial: { opacity: 0 },
@@ -45,7 +46,7 @@ export const slideInLeft: Variants = {
 };
 
 export const springTransition = {
-  type: 'spring',
+  type: 'spring' as AnimationGeneratorType,
   damping: 30,
   stiffness: 300
 };
@@ -58,7 +59,7 @@ export const smoothTransition = {
 export const tactileHover = {
   scale: 1.02,
   y: -4,
-  transition: { type: 'spring', stiffness: 400, damping: 10 }
+  transition: { type: 'spring' as AnimationGeneratorType, stiffness: 400, damping: 10 }
 };
 
 export const tactileTap = {
