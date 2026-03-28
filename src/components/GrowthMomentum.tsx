@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   TrendingUp, 
   Leaf, 
@@ -25,6 +25,7 @@ import {
   Cell
 } from 'recharts';
 import { cn } from '../lib/utils';
+import { fetchGrowthData } from '../services/apiService';
 
 const MOCK_GROWTH_DATA = [
   { day: 'Mon', momentum: 65, health: 82 },
@@ -97,6 +98,19 @@ const MomentumGauge = ({ value, label, sublabel }: { value: number, label: strin
 };
 
 export const GrowthMomentum = () => {
+  const [growthData, setGrowthData] = useState<any[]>([]);
+  const [batchMomentum, setBatchMomentum] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchGrowthData().then(d => {
+      setGrowthData(d.growthData);
+      setBatchMomentum(d.batchMomentum);
+    }).catch(console.error);
+  }, []);
+
+  const overallMomentum = batchMomentum.length
+    ? Math.round(batchMomentum.reduce((s, b) => s + b.momentum, 0) / batchMomentum.length)
+    : 0;
   return (
     <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] sm:rounded-[3.5rem] p-6 sm:p-12 relative overflow-hidden group shadow-neumorphic transition-all duration-700 hover:border-emerald-500/20">
       {/* Background Glows */}
@@ -120,7 +134,7 @@ export const GrowthMomentum = () => {
           </div>
 
           <div className="py-8">
-            <MomentumGauge value={88} label="Overall Momentum" sublabel="Kericho Enterprise Sector" />
+            <MomentumGauge value={overallMomentum} label="Overall Momentum" sublabel="Kericho Enterprise Sector" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -161,7 +175,7 @@ export const GrowthMomentum = () => {
           <div className="h-[280px] sm:h-[400px] w-full bg-slate-950/60 rounded-[2rem] sm:rounded-[3.5rem] border border-white/5 shadow-neumorphic-inset relative group/chart">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 pointer-events-none group-hover/chart:opacity-100 opacity-50 transition-opacity duration-1000 rounded-[3.5rem]" />
             <ResponsiveContainer width="99%" height="100%">
-              <AreaChart data={MOCK_GROWTH_DATA}>
+              <AreaChart data={growthData}>
                 <defs>
                   <linearGradient id="colorMomentum" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
@@ -209,7 +223,7 @@ export const GrowthMomentum = () => {
 
           {/* Batch Momentum List */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {BATCH_MOMENTUM.map((batch) => (
+            {batchMomentum.map((batch) => (
               <motion.div 
                 key={batch.id}
                 whileHover={{ y: -10, scale: 1.02 }}
