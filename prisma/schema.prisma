@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Listing {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String
+  priceKes    Float
+  unit        String
+  quantity    String
+  seller      String
+  location    String
+  rating      Float    @default(0)
+  verified    Boolean  @default(false)
+  delivery    String
+  lat         Float
+  lng         Float
+  createdAt   DateTime @default(now())
+}
+
+model InventoryItem {
+  id          Int      @id @default(autoincrement())
+  sku         String   @unique
+  name        String
+  category    String
+  stock       Float
+  unit        String
+  priceKes    Float
+  status      String   @default("In Stock")
+  updatedAt   DateTime @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  type        String
+  amountKes   Float
+  method      String
+  status      String   @default("Pending")
+  farmer      String
+  batchId     String?
+  checkoutId  String?  @unique
+  createdAt   DateTime @default(now())
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  type      String
+  comment   String
+  userEmail String
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  chatId     String
+  text       String
+  sender     String
+  createdAt  DateTime @default(now())
+}
