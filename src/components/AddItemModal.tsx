@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Package, Tag, Layers, BarChart3, DollarSign, Save, CheckCircle2 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { createInventoryItem } from '../services/apiService';
 
 interface AddItemModalProps {
   isOpen: boolean;
@@ -20,37 +21,32 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      const newItem = {
-        id: `SKU-${Math.floor(100 + Math.random() * 900)}`,
-        ...formData,
-        stock: parseInt(formData.stock) || 0,
-        status: parseInt(formData.stock) > 0 ? 'In Stock' : 'Out of Stock',
-        price: `KES ${formData.price}/${formData.unit}`,
-        lastUpdated: 'Just now'
-      };
-
+    try {
+      const stock = parseInt(formData.stock) || 0;
+      const newItem = await createInventoryItem({
+        sku: `SKU-${Math.floor(100 + Math.random() * 900)}`,
+        name: formData.name,
+        category: formData.category,
+        stock,
+        unit: formData.unit,
+        priceKes: parseFloat(formData.price) || 0,
+        status: stock > 500 ? 'In Stock' : stock > 0 ? 'Low Stock' : 'Out of Stock'
+      });
       onAdd(newItem);
       setIsSuccess(true);
-      setIsSubmitting(false);
-
       setTimeout(() => {
         setIsSuccess(false);
-        setFormData({
-          name: '',
-          category: 'Coffee',
-          stock: '',
-          unit: 'KG',
-          price: '',
-        });
+        setFormData({ name: '', category: 'Coffee', stock: '', unit: 'KG', price: '' });
         onClose();
       }, 1500);
-    }, 800);
+    } catch (e) {
+      console.error('Failed to add item', e);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
