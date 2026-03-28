@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Package, 
   Search, 
@@ -19,39 +19,46 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { AddItemModal } from './AddItemModal';
-
-const INITIAL_INVENTORY = [
-  { id: 'SKU-001', name: 'Premium Arabica Coffee', category: 'Coffee', stock: 1240, unit: 'KG', status: 'In Stock', price: 'KES 450/KG', lastUpdated: '2h ago' },
-  { id: 'SKU-002', name: 'Organic Tea Leaves', category: 'Tea', stock: 850, unit: 'KG', status: 'Low Stock', price: 'KES 320/KG', lastUpdated: '5h ago' },
-  { id: 'SKU-003', name: 'Macadamia Nuts', category: 'Nuts', stock: 0, unit: 'KG', status: 'Out of Stock', price: 'KES 850/KG', lastUpdated: '1d ago' },
-  { id: 'SKU-004', name: 'Hass Avocados', category: 'Fruit', stock: 2100, unit: 'Units', status: 'In Stock', price: 'KES 45/Unit', lastUpdated: '30m ago' },
-  { id: 'SKU-005', name: 'Purple Passion Fruit', category: 'Fruit', stock: 450, unit: 'KG', status: 'In Stock', price: 'KES 120/KG', lastUpdated: '4h ago' },
-];
+import { fetchInventory } from '../services/apiService';
 
 export const Inventory = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [items, setItems] = useState(INITIAL_INVENTORY);
+  const [items, setItems] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Simulate live stock sync
-  React.useEffect(() => {
-    const interval = setInterval(() => {
+  const loadItems = async (q?: string) => {
+    try {
       setIsSyncing(true);
-      setTimeout(() => setIsSyncing(false), 1000);
-    }, 15000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleAddItem = (newItem: any) => {
-    setItems([newItem, ...items]);
+      const data = await fetchInventory(q);
+      setItems(data);
+    } catch (e) {
+      console.error('Failed to load inventory', e);
+    } finally {
+      setIsSyncing(false);
+      setLoading(false);
+    }
   };
 
-  const filteredItems = items.filter(item => 
-    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => { loadItems(); }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => loadItems(searchQuery), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  // Live sync every 15s
+  useEffect(() => {
+    const interval = setInterval(() => loadItems(searchQuery), 15000);
+    return () => clearInterval(interval);
+  }, [searchQuery]);
+
+  const handleAddItem = (newItem: any) => {
+    setItems(prev => [newItem, ...prev]);
+  };
+
+  const filteredItems = items;
 
   return (
     <div className="space-y-8 sm:space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
@@ -106,6 +113,11 @@ export const Inventory = () => {
       {/* Inventory Table */}
       <div className="bg-slate-900/40 backdrop-blur-xl border border-white/5 overflow-hidden rounded-[2rem] sm:rounded-[4rem] shadow-neumorphic">
         <div className="overflow-x-auto scrollbar-hide">
+          {loading ? (
+            <div className="flex items-center justify-center py-24">
+              <div className="w-8 h-8 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+            </div>
+          ) : (
           <table className="w-full text-left border-collapse min-w-[700px]">
             <thead>
               <tr className="border-b border-white/5 bg-slate-950/80 backdrop-blur-3xl">
@@ -131,7 +143,7 @@ export const Inventory = () => {
                   >
                     <td className="px-12 py-10">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-mono text-emerald-500/50 mb-2 font-black uppercase tracking-widest">{item.id}</span>
+                        <span className="text-[10px] font-mono text-emerald-500/50 mb-2 font-black uppercase tracking-widest">{item.sku}</span>
                         <span className="text-lg font-black text-white group-hover:text-emerald-400 transition-colors tracking-tighter drop-shadow-2xl">{item.name}</span>
                       </div>
                     </td>
@@ -160,10 +172,12 @@ export const Inventory = () => {
                       </div>
                     </td>
                     <td className="px-12 py-10">
-                      <span className="text-base font-mono font-black text-white tracking-tight drop-shadow-2xl">{item.price}</span>
+                      <span className="text-base font-mono font-black text-white tracking-tight drop-shadow-2xl">KES {item.priceKes}/{item.unit}</span>
                     </td>
                     <td className="px-12 py-10">
-                      <span className="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">{item.lastUpdated}</span>
+                      <span className="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">
+                        {new Date(item.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                     </td>
                     <td className="px-12 py-10 text-right">
                       <button className="p-4 text-slate-800 hover:text-white transition-all neumorphic-button-sm border border-white/5">
@@ -175,6 +189,7 @@ export const Inventory = () => {
               </AnimatePresence>
             </tbody>
           </table>
+          )}
         </div>
       </div>
 
