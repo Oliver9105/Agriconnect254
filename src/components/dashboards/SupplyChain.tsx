@@ -35,6 +35,7 @@ import { BatchDetailModal } from '../BatchDetailModal';
 import { StkPushModal } from '../StkPushModal';
 import { cn } from '../../lib/utils';
 import { fadeInUp, staggerContainer, smoothTransition, tactileHover, tactileTap, scaleIn, fadeIn } from '../../lib/animations';
+import { fetchBatches, updateBatch } from '../../services/apiService';
 
 // Types
 interface HistoryItem {
@@ -63,77 +64,6 @@ interface Batch {
   securityHash?: string;
   history: HistoryItem[];
 }
-
-const BATCHES: Batch[] = [
-  {
-    id: 'B-102',
-    product: 'Premium Kericho Tea',
-    status: 'In Transit',
-    origin: 'Kericho Hub',
-    destination: 'Nairobi Market',
-    originCoords: [-0.3689, 35.2863],
-    destCoords: [-1.2864, 36.8172],
-    progress: 65,
-    temp: '18.4°C',
-    humidity: '62%',
-    eta: '2h 15m',
-    lastUpdate: '2 mins ago',
-    driver: 'John Kamau',
-    driverPhone: '+254 712 345 678',
-    vehicle: 'KDA 452L',
-    securityHash: '0x8f...2e4a',
-    history: [
-      { status: 'In Transit', location: 'Nairobi-Mombasa Highway', time: 'Today, 10:45 AM', iconName: 'Truck' },
-      { status: 'Hub Processing', location: 'Nairobi Logistics Hub', time: 'Yesterday, 04:20 PM', iconName: 'Package' },
-      { status: 'KEPHIS Verified', location: 'Quality Control Office', time: 'Mar 18, 09:15 AM', iconName: 'Shield' },
-      { status: 'Batch Created', location: 'Kericho Farm Hub', time: 'Mar 17, 02:30 PM', iconName: 'Leaf' },
-    ]
-  },
-  {
-    id: 'B-105',
-    product: 'Organic Avocados',
-    status: 'Loading',
-    origin: 'Bomet Central',
-    destination: 'Nairobi Hub',
-    originCoords: [-0.7813, 35.3416],
-    destCoords: [-1.2921, 36.8219],
-    progress: 10,
-    temp: '21.2°C',
-    humidity: '58%',
-    eta: '6h 45m',
-    lastUpdate: '15 mins ago',
-    driver: 'Sarah Wanjiku',
-    driverPhone: '+254 723 456 789',
-    vehicle: 'KCB 981X',
-    securityHash: '0x3a...9b1c',
-    history: [
-      { status: 'Loading', location: 'Bomet Central Farm', time: 'Today, 08:00 AM', iconName: 'Package' },
-    ]
-  },
-  {
-    id: 'B-098',
-    product: 'Specialty Coffee',
-    status: 'Delivered',
-    origin: 'Kericho East',
-    destination: 'Mombasa Port',
-    originCoords: [-0.3750, 35.3500],
-    destCoords: [-4.0435, 39.6682],
-    progress: 100,
-    temp: '24.1°C',
-    humidity: '70%',
-    eta: 'Completed',
-    lastUpdate: '1 hour ago',
-    driver: 'Peter Maina',
-    driverPhone: '+254 734 567 890',
-    vehicle: 'KDD 223M',
-    securityHash: '0x7d...5f2e',
-    history: [
-      { status: 'Delivered', location: 'Mombasa Port', time: 'Mar 20, 02:00 PM', iconName: 'CheckCircle2' },
-      { status: 'In Transit', location: 'Nairobi-Mombasa Highway', time: 'Mar 19, 10:00 AM', iconName: 'Truck' },
-      { status: 'Batch Created', location: 'Kericho East Farm', time: 'Mar 17, 09:00 AM', iconName: 'Leaf' },
-    ]
-  }
-];
 
 type GaugeColor = 'cyan' | 'blue' | 'emerald' | 'amber';
 
@@ -170,44 +100,47 @@ const VisualGauge = ({ value, max, label, icon: Icon, color }: { value: number, 
 };
 
 export const SupplyChain = () => {
-  const [selectedBatch, setSelectedBatch] = useState<Batch>(BATCHES[0]);
+  const [batches, setBatches] = useState<Batch[]>([]);
+  const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [liveData, setLiveData] = useState(BATCHES);
+  const [liveData, setLiveData] = useState<Batch[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStkModalOpen, setIsStkModalOpen] = useState(false);
   const [batchToLock, setBatchToLock] = useState<Batch | null>(null);
 
+  useEffect(() => {
+    fetchBatches().then(data => {
+      // Map DB fields to component shape
+      const mapped = data.map((b: any) => ({
+        ...b,
+        originCoords: [b.originLat, b.originLng] as [number, number],
+        destCoords: [b.destLat, b.destLng] as [number, number],
+      }));
+      setBatches(mapped);
+      setLiveData(mapped);
+      if (mapped.length > 0) setSelectedBatch(mapped[0]);
+    }).catch(console.error);
+  }, []);
+
   // Real-time data streaming simulation
   useEffect(() => {
+    if (liveData.length === 0) return;
     const interval = setInterval(() => {
       setLiveData(current => current.map(batch => {
         if (batch.status !== 'In Transit') return batch;
-        
         const newProgress = Math.min(100, batch.progress + (Math.random() * 0.5));
         const currentTemp = parseFloat(batch.temp);
         const newTemp = (currentTemp + (Math.random() - 0.5) * 0.2).toFixed(1) + '°C';
         const currentHumidity = parseFloat(batch.humidity);
         const newHumidity = Math.min(100, Math.max(0, currentHumidity + (Math.random() - 0.5) * 1)).toFixed(0) + '%';
-
-        const updatedBatch = {
-          ...batch,
-          progress: parseFloat(newProgress.toFixed(1)),
-          temp: newTemp,
-          humidity: newHumidity,
-          status: newProgress === 100 ? 'Delivered' : 'In Transit' as any
-        };
-
-        if (selectedBatch.id === batch.id) {
-          setSelectedBatch(updatedBatch);
-        }
-
+        const updatedBatch = { ...batch, progress: parseFloat(newProgress.toFixed(1)), temp: newTemp, humidity: newHumidity, status: newProgress === 100 ? 'Delivered' : 'In Transit' as any };
+        if (selectedBatch?.id === batch.id) setSelectedBatch(updatedBatch);
         return updatedBatch;
       }));
     }, 3000);
-
     return () => clearInterval(interval);
-  }, [selectedBatch.id]);
+  }, [liveData.length, selectedBatch?.id]);
 
   const [sortOption, setSortOption] = useState<'eta' | 'progress' | 'lastUpdate'>('progress');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -342,8 +275,8 @@ export const SupplyChain = () => {
               animate="animate"
               className="grid grid-cols-1 md:grid-cols-3 gap-8"
             >
-              <VisualGauge value={parseFloat(selectedBatch.temp)} max={40} label="Temp" icon={Thermometer} color="cyan" />
-              <VisualGauge value={parseFloat(selectedBatch.humidity)} max={100} label="Humidity" icon={Droplets} color="blue" />
+              <VisualGauge value={parseFloat(selectedBatch?.temp ?? '20')} max={40} label="Temp" icon={Thermometer} color="cyan" />
+              <VisualGauge value={parseFloat(selectedBatch?.humidity ?? '60')} max={100} label="Humidity" icon={Droplets} color="blue" />
               <motion.div 
                 variants={fadeInUp}
                 className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-8 shadow-neumorphic-inset-sm flex flex-col justify-between group hover:bg-slate-900/60 transition-all"
@@ -355,7 +288,7 @@ export const SupplyChain = () => {
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Blockchain Proof</span>
                 </div>
                 <p className="text-[11px] font-black font-mono text-slate-600 break-all bg-slate-950/50 p-4 rounded-2xl border border-white/5 group-hover:text-emerald-400 transition-colors shadow-neumorphic-inset-sm">
-                  {selectedBatch.securityHash || '0x7d...5f2e'}
+                  {selectedBatch?.securityHash || '0x7d...5f2e'}
                 </p>
               </motion.div>
             </motion.div>
@@ -368,7 +301,7 @@ export const SupplyChain = () => {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
                 <div>
                   <h3 className="text-3xl font-black text-white tracking-tighter mb-2 drop-shadow-2xl">Immutable Timeline</h3>
-                  <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Blockchain-verified movement tracking for Batch {selectedBatch.id}</p>
+                  <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Blockchain-verified movement tracking for Batch {selectedBatch?.id}</p>
                 </div>
                 <div className="flex items-center gap-4 px-8 py-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] shadow-glow-emerald">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-glow-emerald animate-pulse" />
@@ -379,7 +312,7 @@ export const SupplyChain = () => {
               <div className="relative">
                 <div className="absolute left-10 top-0 bottom-0 w-px bg-slate-950 shadow-neumorphic-inset-sm" />
                 <div className="space-y-16">
-                  {selectedBatch.history.map((step, i) => {
+                  {(selectedBatch?.history ?? []).map((step, i) => {
                     const Icon = {
                       Truck,
                       Package,
@@ -546,17 +479,18 @@ export const SupplyChain = () => {
         </div>
       </div>
       
-      <BatchDetailModal 
+      {selectedBatch && <BatchDetailModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         batch={selectedBatch} 
-      />
+      />}
       <StkPushModal 
         isOpen={isStkModalOpen} 
         onClose={() => setIsStkModalOpen(false)} 
-        onConfirm={(phone, success) => {
+        onConfirm={async (phone, success) => {
           if (success && batchToLock) {
-            setLiveData(current => current.map(b => 
+            await updateBatch(batchToLock.id, { status: 'Processing' });
+            setLiveData(current => current.map(b =>
               b.id === batchToLock.id ? { ...b, status: 'Processing' } : b
             ));
           }
