@@ -11,6 +11,7 @@ import {
 import { TrendingUp, Zap, Info, ChevronRight, Activity, Truck, Mic, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
+import { fetchPrediction } from '../services/apiService';
 
 interface PredictionData {
   batchId: string;
@@ -27,31 +28,14 @@ export const NeuralAgri = ({ batchId }: { batchId: string }) => {
   const [loading, setLoading] = useState(false);
 
   const runPrediction = async () => {
-    if (isOpen) {
-      setIsOpen(false);
-      return;
-    }
-    
+    if (isOpen) { setIsOpen(false); return; }
     setLoading(true);
     try {
-      // Mocking API call for prediction
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const data: PredictionData = {
-        batchId,
-        crop: 'Hass Avocado',
-        probability: '94.2',
-        status: 'Optimal',
-        graphData: Array.from({length: 12}, (_, i) => ({day: i, momentum: 40 + Math.random() * 40})),
-        matrix: [
-          { label: 'Soil pH', value: '6.4', color: 'text-emerald-500' },
-          { label: 'Moisture', value: '78%', color: 'text-blue-500' },
-          { label: 'Nutrients', value: 'High', color: 'text-amber-500' }
-        ]
-      };
+      const data = await fetchPrediction(batchId);
       setPrediction(data);
       setIsOpen(true);
     } catch (error) {
-      console.error("Prediction failed:", error);
+      console.error('Prediction failed:', error);
     } finally {
       setLoading(false);
     }
