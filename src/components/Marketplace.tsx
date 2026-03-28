@@ -28,6 +28,7 @@ import {
 } from 'recharts';
 import { cn } from '../lib/utils';
 import { fadeInUp, staggerContainer, smoothTransition, tactileHover, tactileTap, scaleIn, fadeIn } from '../lib/animations';
+import { initiateStkPush, pollPaymentStatus } from '../services/mpesaService';
 import { SkeletonBento } from './SkeletonBento';
 import { AgriMap } from './AgriMap';
 
@@ -65,7 +66,9 @@ const LISTINGS = [
     id: 1,
     title: 'Premium Kericho Gold Tea',
     category: 'Tea',
+    priceKes: 185,
     price: 'KES 185/kg',
+    unit: 'kg',
     quantity: '500kg available',
     seller: 'Samuel Koech',
     location: 'Kericho West',
@@ -86,7 +89,9 @@ const LISTINGS = [
     id: 2,
     title: 'Arabica Coffee Beans',
     category: 'Coffee',
+    priceKes: 420,
     price: 'KES 420/kg',
+    unit: 'kg',
     quantity: '200kg available',
     seller: 'David Langat',
     location: 'Sotik',
@@ -107,7 +112,9 @@ const LISTINGS = [
     id: 3,
     title: 'Yellow Maize (Grade A)',
     category: 'Maize',
+    priceKes: 95,
     price: 'KES 95/kg',
+    unit: 'kg',
     quantity: '2.5 Tons available',
     seller: 'Mary Chepkorir',
     location: 'Bomet Central',
@@ -128,7 +135,9 @@ const LISTINGS = [
     id: 4,
     title: 'Organic Hass Avocados',
     category: 'Fruits',
+    priceKes: 120,
     price: 'KES 120/kg',
+    unit: 'kg',
     quantity: '150kg available',
     seller: 'Grace Mutai',
     location: 'Kericho East',
@@ -226,29 +235,26 @@ export const Marketplace = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'IDLE' | 'REQUESTING' | 'SUCCESS' | 'FAILED'>('IDLE');
   const [checkoutRequestId, setCheckoutRequestId] = useState<string | null>(null);
+  const [phone, setPhone] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [phoneError, setPhoneError] = useState('');
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
+  // Reset quantity when product changes
+  useEffect(() => { setQuantity(1); setPhone(''); setPhoneError(''); }, [selectedProduct]);
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (paymentStatus === 'REQUESTING' && checkoutRequestId) {
       interval = setInterval(async () => {
         try {
-          const response = await fetch(`/api/v1/purchase/status/${checkoutRequestId}`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          if (data.status === 'SUCCESS') {
-            setPaymentStatus('SUCCESS');
-            clearInterval(interval);
-          } else if (data.status === 'FAILED') {
-            setPaymentStatus('FAILED');
-            clearInterval(interval);
-          }
+          const status = await pollPaymentStatus(checkoutRequestId);
+          if (status === 'Completed') { setPaymentStatus('SUCCESS'); clearInterval(interval); }
+          else if (status === 'Failed') { setPaymentStatus('FAILED'); clearInterval(interval); }
         } catch (error) {
           console.error('Polling error:', error);
         }
@@ -257,17 +263,23 @@ export const Marketplace = () => {
     return () => clearInterval(interval);
   }, [paymentStatus, checkoutRequestId]);
 
+  const totalAmount = selectedProduct ? (selectedProduct.priceKes ?? 0) * quantity : 0;
+
   const handlePurchase = async () => {
+    const cleaned = phone.replace(/\s/g, '');
+    if (!cleaned || !/^(07|01|2547|2541)\d{8,}$/.test(cleaned)) {
+      setPhoneError('Enter a valid Safaricom number e.g. 0712345678');
+      return;
+    }
+    setPhoneError('');
+    // Normalize to 254 format
+    const normalized = cleaned.startsWith('0') ? '254' + cleaned.slice(1) : cleaned;
     setPaymentStatus('REQUESTING');
     setIsPaymentModalOpen(true);
     try {
-      const response = await fetch('/api/v1/purchase/initiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemId: selectedProduct.id, phoneNumber: '254700000000' })
-      });
-      const data = await response.json();
-      setCheckoutRequestId(data.CheckoutRequestID);
+      const result = await initiateStkPush(totalAmount, normalized, selectedProduct.id, selectedProduct.seller);
+      if (result.checkoutRequestId) setCheckoutRequestId(result.checkoutRequestId);
+      else setPaymentStatus('FAILED');
     } catch (error) {
       console.error('Purchase initiation error:', error);
       setPaymentStatus('FAILED');
@@ -597,15 +609,45 @@ export const Marketplace = () => {
                   </div>
                 </div>
 
+                {/* M-Pesa Purchase Section */}
+                <div className="bg-slate-950/60 border border-white/5 rounded-[2rem] p-8 mb-6 space-y-6 shadow-neumorphic-inset">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">M-Pesa Payment</p>
+
+                  {/* Quantity */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Quantity ({selectedProduct.unit ?? 'kg'})</label>
+                    <div className="flex items-center gap-4">
+                      <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 text-white font-black text-lg flex items-center justify-center hover:border-emerald-500/30 transition-all active:scale-90">−</button>
+                      <span className="text-2xl font-black text-white font-mono w-12 text-center">{quantity}</span>
+                      <button onClick={() => setQuantity(q => q + 1)} className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 text-white font-black text-lg flex items-center justify-center hover:border-emerald-500/30 transition-all active:scale-90">+</button>
+                      <span className="ml-auto text-emerald-400 font-black text-xl font-mono">KES {(totalAmount).toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  {/* Phone Number */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Safaricom Phone Number</label>
+                    <div className="flex items-center gap-3 bg-slate-900 border border-white/5 rounded-2xl px-5 py-4 focus-within:border-emerald-500/50 transition-all">
+                      <Smartphone className="w-5 h-5 text-emerald-500 flex-none" />
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={e => { setPhone(e.target.value); setPhoneError(''); }}
+                        placeholder="0712 345 678"
+                        className="flex-1 bg-transparent text-white font-black text-sm focus:outline-none placeholder:text-slate-700"
+                      />
+                    </div>
+                    {phoneError && <p className="text-rose-500 text-[10px] font-black uppercase tracking-widest">{phoneError}</p>}
+                  </div>
+                </div>
+
                 <div className="flex gap-4">
                   <button 
                     onClick={handlePurchase}
-                    className="flex-1 bg-emerald-600 text-white py-5 sm:py-8 rounded-[2rem] font-black text-xs sm:text-sm hover:shadow-glow-emerald transition-all uppercase tracking-[0.3em] active:scale-95 border border-white/10 shadow-neumorphic"
+                    className="flex-1 bg-emerald-600 text-white py-5 sm:py-6 rounded-[2rem] font-black text-xs sm:text-sm hover:shadow-glow-emerald transition-all uppercase tracking-[0.3em] active:scale-95 border border-white/10 shadow-neumorphic flex items-center justify-center gap-3"
                   >
-                    Initiate Trade
-                  </button>
-                  <button className="p-5 sm:p-8 bg-slate-950/50 text-white rounded-[2rem] font-black transition-all border border-white/5 shadow-neumorphic active:shadow-neumorphic-inset group">
-                    <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-slate-700 group-hover:text-emerald-500 transition-colors" />
+                    <Smartphone className="w-5 h-5" />
+                    Pay KES {totalAmount.toLocaleString()} via M-Pesa
                   </button>
                 </div>
               </div>
@@ -648,37 +690,88 @@ export const Marketplace = () => {
         {isPaymentModalOpen && (
           <div className="fixed inset-0 z-[300] flex items-center justify-center p-6">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-950/90 backdrop-blur-xl" />
-            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="relative bg-slate-900 border border-white/10 p-12 rounded-[3rem] text-center max-w-sm w-full shadow-2xl">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative bg-slate-900 border border-white/10 p-10 rounded-[3rem] text-center max-w-sm w-full shadow-2xl space-y-8">
+              
+              {/* Header */}
+              <div className="flex items-center justify-center gap-4">
+                <div className={cn(
+                  "w-16 h-16 rounded-2xl flex items-center justify-center border",
+                  paymentStatus === 'SUCCESS' ? "bg-emerald-500/20 border-emerald-500/30" :
+                  paymentStatus === 'FAILED' ? "bg-rose-500/20 border-rose-500/30" :
+                  "bg-emerald-500/10 border-emerald-500/20 shadow-glow-emerald"
+                )}>
+                  {paymentStatus === 'SUCCESS' ? <ShieldCheck className="w-8 h-8 text-emerald-400" /> :
+                   paymentStatus === 'FAILED' ? <X className="w-8 h-8 text-rose-400" /> :
+                   <Smartphone className="w-8 h-8 text-emerald-400" />}
+                </div>
+              </div>
+
               {paymentStatus === 'REQUESTING' && (
-                <div className="space-y-8">
-                  <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shadow-glow-emerald">
-                    <Smartphone className="w-10 h-10 text-emerald-500" />
-                  </div>
+                <>
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-black text-white tracking-tighter">Enter M-Pesa PIN</h3>
-                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">Check your phone for the STK prompt</p>
+                    <h3 className="text-2xl font-black text-white tracking-tighter">Check Your Phone</h3>
+                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">M-Pesa STK Push sent to {phone}</p>
+                  </div>
+                  {/* Transaction summary */}
+                  <div className="bg-slate-950/60 rounded-2xl border border-white/5 p-6 text-left space-y-3">
+                    <div className="flex justify-between text-[11px] font-black">
+                      <span className="text-slate-500 uppercase tracking-widest">Item</span>
+                      <span className="text-white">{selectedProduct?.title}</span>
+                    </div>
+                    <div className="flex justify-between text-[11px] font-black">
+                      <span className="text-slate-500 uppercase tracking-widest">Qty</span>
+                      <span className="text-white">{quantity} {selectedProduct?.unit ?? 'kg'}</span>
+                    </div>
+                    <div className="flex justify-between text-[11px] font-black">
+                      <span className="text-slate-500 uppercase tracking-widest">Seller</span>
+                      <span className="text-white">{selectedProduct?.seller}</span>
+                    </div>
+                    <div className="border-t border-white/5 pt-3 flex justify-between">
+                      <span className="text-slate-500 text-[11px] font-black uppercase tracking-widest">Total</span>
+                      <span className="text-emerald-400 font-black text-lg font-mono">KES {totalAmount.toLocaleString()}</span>
+                    </div>
                   </div>
                   <div className="flex justify-center gap-3">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="w-4 h-4 rounded-full bg-slate-700 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
+                    {[1,2,3,4].map(i => (
+                      <div key={i} className="w-3 h-3 rounded-full bg-emerald-500/40 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
                     ))}
                   </div>
-                </div>
+                  <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.2em]">Enter your M-Pesa PIN to complete</p>
+                  <button onClick={() => { setIsPaymentModalOpen(false); setPaymentStatus('IDLE'); }} className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-rose-500 transition-colors">Cancel</button>
+                </>
               )}
+
               {paymentStatus === 'SUCCESS' && (
-                <div className="space-y-6">
-                  <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto">
-                    <ShieldCheck className="w-10 h-10 text-emerald-500" />
+                <>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black text-white tracking-tighter">Payment Confirmed!</h3>
+                    <p className="text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em]">KES {totalAmount.toLocaleString()} paid successfully</p>
                   </div>
-                  <h3 className="text-xl font-black text-white">Blockchain-Verified!</h3>
-                  <button onClick={() => { setIsPaymentModalOpen(false); setSelectedProduct(null); setPaymentStatus('IDLE'); }} className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest">Close</button>
-                </div>
+                  <div className="bg-slate-950/60 rounded-2xl border border-emerald-500/20 p-6 text-left space-y-3">
+                    <div className="flex justify-between text-[11px] font-black">
+                      <span className="text-slate-500 uppercase tracking-widest">Item</span>
+                      <span className="text-white">{selectedProduct?.title}</span>
+                    </div>
+                    <div className="flex justify-between text-[11px] font-black">
+                      <span className="text-slate-500 uppercase tracking-widest">Ref</span>
+                      <span className="text-emerald-400 font-mono">{checkoutRequestId?.slice(-10)}</span>
+                    </div>
+                  </div>
+                  <button onClick={() => { setIsPaymentModalOpen(false); setSelectedProduct(null); setPaymentStatus('IDLE'); setCheckoutRequestId(null); }} className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-500 transition-all">Done</button>
+                </>
               )}
+
               {paymentStatus === 'FAILED' && (
-                <div className="space-y-6">
-                  <h3 className="text-xl font-black text-rose-500">Payment Failed</h3>
-                  <button onClick={() => setIsPaymentModalOpen(false)} className="w-full bg-slate-800 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest">Retry</button>
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black text-rose-400 tracking-tighter">Payment Failed</h3>
+                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">Request was cancelled or timed out</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => { setIsPaymentModalOpen(false); setPaymentStatus('IDLE'); }} className="flex-1 bg-slate-800 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-700 transition-all">Close</button>
+                    <button onClick={() => { setIsPaymentModalOpen(false); setPaymentStatus('IDLE'); setTimeout(handlePurchase, 100); }} className="flex-1 bg-emerald-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-500 transition-all">Retry</button>
+                  </div>
+                </>
               )}
             </motion.div>
           </div>
