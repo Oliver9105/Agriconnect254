@@ -56,3 +56,14 @@ export const sendMessage = (chatId: string, text: string, sender: string) =>
 // NeuralAgri prediction
 export const fetchPrediction = (batchId: string) =>
   get<any>(`/predict/${batchId}`);
+
+// Batches (supply chain)
+export const fetchBatches = () => get<any[]>('/batches');
+export const updateBatch = (id: string, data: any) => patch<any>(`/batches/${id}`, data);
+
+// Notifications
+export const fetchNotifications = () => get<any[]>('/notifications');
+export const markAllNotificationsRead = () => patch<any>('/notifications/read-all', {});
+
+// Growth dashboard
+export const fetchGrowthData = () => get<{ growthData: any[]; batchMomentum: any[] }>('/growth');

@@ -10,6 +10,7 @@ import transactionsRouter from './src/api/transactions.js';
 import mpesaRouter from './src/api/mpesa.js';
 import agriRouter from './src/api/agri.js';
 import commsRouter from './src/api/comms.js';
+import dashboardRouter from './src/api/dashboard.js';
 
 async function startServer() {
   const app = express();
@@ -25,6 +26,7 @@ async function startServer() {
   app.use('/api/v1/mpesa', mpesaRouter);
   app.use('/api/v1', agriRouter);
   app.use('/api/v1', commsRouter);
+  app.use('/api/v1', dashboardRouter);
 
   // Vite / static
   if (process.env.NODE_ENV !== 'production') {

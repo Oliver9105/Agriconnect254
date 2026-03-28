@@ -63,3 +63,63 @@ model Message {
   sender     String
   createdAt  DateTime @default(now())
 }
+
+model Batch {
+  id          String   @id
+  product     String
+  status      String   @default("Loading")
+  origin      String
+  destination String
+  originLat   Float
+  originLng   Float
+  destLat     Float
+  destLng     Float
+  progress    Float    @default(0)
+  temp        String   @default("20.0°C")
+  humidity    String   @default("60%")
+  eta         String   @default("TBD")
+  lastUpdate  String   @default("Just now")
+  driver      String
+  driverPhone String
+  vehicle     String
+  securityHash String?
+  history     BatchHistory[]
+  createdAt   DateTime @default(now())
+}
+
+model BatchHistory {
+  id       Int    @id @default(autoincrement())
+  batchId  String
+  batch    Batch  @relation(fields: [batchId], references: [id])
+  status   String
+  location String
+  time     String
+  iconName String
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  title     String
+  message   String
+  type      String
+  iconName  String
+  color     String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model GrowthData {
+  id       Int    @id @default(autoincrement())
+  day      String
+  momentum Float
+  health   Float
+}
+
+model BatchMomentum {
+  id       Int    @id @default(autoincrement())
+  batchId  String @unique
+  name     String
+  momentum Float
+  status   String
+  color    String
+}
